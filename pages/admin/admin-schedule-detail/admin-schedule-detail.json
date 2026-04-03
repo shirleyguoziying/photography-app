@@ -1,0 +1,1 @@
+{ "navigationBarTitleText": "日程详情", "usingComponents": { "order-card": "../../../components/order-card/order-card" } }

@@ -1,0 +1,192 @@
+<view class="booking-page">
+  <booking-step-bar currentStep="{{currentStep}}" />
+
+  <!-- Step 0: 选择时间 -->
+  <view wx:if="{{currentStep === 0}}" class="step-content">
+    <view class="step-title">选择拍摄时间</view>
+
+    <!-- Date Picker -->
+    <view class="section-card">
+      <view class="field-label">拍摄日期</view>
+      <picker mode="date" value="{{formData.preferredDate}}" start="{{minDate}}" bindchange="onDateChange">
+        <view class="picker-value {{formData.preferredDate ? '' : 'placeholder'}}">
+          {{formData.preferredDate || '请选择日期'}}
+          <text class="arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- Time Slots -->
+    <view class="section-card" wx:if="{{formData.preferredDate}}">
+      <view class="field-label">拍摄时间</view>
+      <view class="time-grid">
+        <view
+          wx:for="{{timeSlots}}"
+          wx:key="*this"
+          class="time-chip {{formData.preferredTime === item ? 'active' : ''}} {{unavailableTimes[item] ? 'disabled' : ''}}"
+          bindtap="onTimeSelect"
+          data-time="{{item}}"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <!-- Duration -->
+    <view class="section-card">
+      <view class="field-label">拍摄时长</view>
+      <view class="duration-list">
+        <view
+          wx:for="{{durationOptions}}"
+          wx:key="value"
+          class="duration-item {{formData.duration === item.value ? 'active' : ''}}"
+          bindtap="onDurationSelect"
+          data-value="{{item.value}}"
+        >{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Step 1: 选择地点 -->
+  <view wx:elif="{{currentStep === 1}}" class="step-content">
+    <view class="step-title">选择拍摄地点</view>
+
+    <view class="section-card">
+      <view class="field-label">拍摄地点</view>
+      <view class="location-btn" bindtap="chooseLocation">
+        <view wx:if="{{formData.location.name}}" class="location-selected">
+          <text class="location-name">{{formData.location.name}}</text>
+          <text class="location-addr">{{formData.location.address}}</text>
+        </view>
+        <view wx:else class="location-placeholder">
+          <text>📍 点击选择地点</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="section-card" wx:if="{{formData.location.latitude}}">
+      <map
+        class="mini-map"
+        latitude="{{formData.location.latitude}}"
+        longitude="{{formData.location.longitude}}"
+        scale="14"
+        markers="{{mapMarkers}}"
+        show-compass
+      />
+    </view>
+
+    <view class="section-card">
+      <view class="field-label">补充说明（可选）</view>
+      <textarea
+        class="textarea"
+        placeholder="例如：具体入口位置、停车信息等..."
+        value="{{formData.locationNotes}}"
+        bindinput="onLocationNotesInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- Step 2: 道具 & 服装 -->
+  <view wx:elif="{{currentStep === 2}}" class="step-content">
+    <view class="step-title">道具 & 服装</view>
+
+    <view class="section-card">
+      <view class="field-label">您是否自带服装？</view>
+      <view class="radio-group">
+        <view class="radio-item {{formData.props.hasOwnOutfit ? 'active' : ''}}" bindtap="setHasOutfit" data-val="{{true}}">是，自带</view>
+        <view class="radio-item {{!formData.props.hasOwnOutfit ? 'active' : ''}}" bindtap="setHasOutfit" data-val="{{false}}">不带服装</view>
+      </view>
+    </view>
+
+    <view class="section-card" wx:if="{{formData.props.hasOwnOutfit}}">
+      <view class="field-label">服装套数</view>
+      <view class="count-stepper">
+        <view class="stepper-btn" bindtap="decOutfitCount">－</view>
+        <text class="stepper-val">{{formData.props.outfitCount}}</text>
+        <view class="stepper-btn" bindtap="incOutfitCount">＋</view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="field-label">拍摄道具（多选）</view>
+      <view class="tag-grid">
+        <view
+          wx:for="{{propsOptions}}"
+          wx:key="key"
+          class="tag-chip {{formData.props.propItems.includes(item.key) ? 'active' : ''}}"
+          bindtap="toggleProp"
+          data-key="{{item.key}}"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="field-label">道具备注（可选）</view>
+      <textarea
+        class="textarea"
+        placeholder="其他道具或特殊需求..."
+        value="{{formData.props.notes}}"
+        bindinput="onPropsNotesInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- Step 3: 拍摄风格 -->
+  <view wx:elif="{{currentStep === 3}}" class="step-content">
+    <view class="step-title">拍摄风格偏好</view>
+
+    <view class="section-card">
+      <view class="field-label">风格标签（至少选1个）</view>
+      <view class="tag-grid">
+        <view
+          wx:for="{{styleTags}}"
+          wx:key="*this"
+          class="tag-chip {{formData.stylePreferences.tags.includes(item) ? 'active' : ''}}"
+          bindtap="toggleStyleTag"
+          data-tag="{{item}}"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="field-label">整体色调氛围</view>
+      <view class="mood-grid">
+        <view
+          wx:for="{{moodOptions}}"
+          wx:key="value"
+          class="mood-item {{formData.stylePreferences.mood === item.value ? 'active' : ''}}"
+          bindtap="onMoodSelect"
+          data-value="{{item.value}}"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="field-label">特别说明（可选）</view>
+      <textarea
+        class="textarea"
+        placeholder="例如：想要的感觉、参考摄影师、过敏/禁忌等..."
+        value="{{formData.stylePreferences.specialRequests}}"
+        bindinput="onSpecialRequestInput"
+        maxlength="500"
+      />
+    </view>
+  </view>
+
+  <!-- Bottom Actions -->
+  <view class="bottom-actions safe-bottom">
+    <button wx:if="{{currentStep > 0}}" class="btn btn-outline" bindtap="prevStep">上一步</button>
+    <button
+      wx:if="{{currentStep < 3}}"
+      class="btn btn-primary {{canNext ? '' : 'btn-disabled'}}"
+      bindtap="nextStep"
+    >下一步</button>
+    <button
+      wx:elif="{{currentStep === 3}}"
+      class="btn btn-accent"
+      bindtap="goToConfirm"
+      loading="{{isSaving}}"
+    >查看预约详情</button>
+  </view>
+</view>

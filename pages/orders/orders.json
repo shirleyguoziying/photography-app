@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "我的订单",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "order-card": "../../components/order-card/order-card",
+    "loading-skeleton": "../../components/loading-skeleton/loading-skeleton",
+    "custom-tab-bar": "../../components/custom-tab-bar/index"
+  }
+}

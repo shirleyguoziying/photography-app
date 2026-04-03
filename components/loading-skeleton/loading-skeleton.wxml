@@ -1,0 +1,15 @@
+<view class="skeleton">
+  <view wx:if="{{type === 'photo-grid'}}" class="grid">
+    <view wx:for="{{count}}" wx:key="*this" class="skeleton-photo" />
+  </view>
+  <view wx:elif="{{type === 'order-list'}}" class="list">
+    <view wx:for="{{count}}" wx:key="*this" class="skeleton-card">
+      <view class="sk-line wide" />
+      <view class="sk-line medium" />
+      <view class="sk-line short" />
+    </view>
+  </view>
+  <view wx:else>
+    <view class="sk-block" style="height: {{height || 200}}rpx;" />
+  </view>
+</view>

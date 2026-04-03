@@ -1,0 +1,76 @@
+<view class="detail-page" wx:if="{{photographer}}">
+  <!-- Cover & Avatar -->
+  <view class="cover-area">
+    <image class="cover-img" src="{{photographer.coverPhoto}}" mode="aspectFill" />
+    <view class="cover-gradient" />
+    <view class="photographer-meta">
+      <image class="avatar" src="{{photographer.avatarUrl}}" mode="aspectFill" />
+      <view class="meta-info">
+        <text class="display-name">{{photographer.displayName}}</text>
+        <view class="style-tags">
+          <text wx:for="{{photographer.styleTags}}" wx:key="*this" class="style-chip">{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Stats Bar -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <text class="stat-num">{{photographer.reviewCount}}</text>
+      <text class="stat-label">评价</text>
+    </view>
+    <view class="stat-divider" />
+    <view class="stat-item">
+      <text class="stat-num">{{photographer.rating}}</text>
+      <text class="stat-label">评分</text>
+    </view>
+    <view class="stat-divider" />
+    <view class="stat-item">
+      <text class="stat-num">¥{{photographer.priceRange.min}}起</text>
+      <text class="stat-label">起步价</text>
+    </view>
+  </view>
+
+  <!-- Bio -->
+  <view class="bio-card" wx:if="{{photographer.bio}}">
+    <text class="bio-text">{{photographer.bio}}</text>
+  </view>
+
+  <!-- Portfolio Grid -->
+  <view class="section">
+    <text class="section-title">作品集</text>
+    <loading-skeleton wx:if="{{isLoadingPortfolio}}" type="photo-grid" count="6" />
+    <view wx:else class="photo-masonry">
+      <view class="masonry-col">
+        <photo-card
+          wx:for="{{leftColumn}}"
+          wx:key="portfolioItemId"
+          item="{{item}}"
+          size="medium"
+          showOverlay
+          bind:tap="onPhotoTap"
+        />
+      </view>
+      <view class="masonry-col">
+        <photo-card
+          wx:for="{{rightColumn}}"
+          wx:key="portfolioItemId"
+          item="{{item}}"
+          size="medium"
+          showOverlay
+          bind:tap="onPhotoTap"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- Sticky Book Button -->
+  <view class="book-bar safe-bottom">
+    <button class="btn btn-accent book-btn" bindtap="goToBooking">预约拍摄</button>
+  </view>
+</view>
+
+<view wx:else class="loading-page">
+  <loading-skeleton type="default" height="480" />
+</view>

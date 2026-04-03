@@ -1,0 +1,10 @@
+<view class="step-bar">
+  <view wx:for="{{steps}}" wx:key="index" class="step-item">
+    <view class="step-circle {{currentStep > item.index ? 'done' : currentStep === item.index ? 'active' : ''}}">
+      <text wx:if="{{currentStep > item.index}}" class="check">✓</text>
+      <text wx:else>{{item.index + 1}}</text>
+    </view>
+    <text class="step-label {{currentStep === item.index ? 'active' : ''}}">{{item.label}}</text>
+    <view class="step-line" wx:if="{{item.index < steps.length - 1}}" />
+  </view>
+</view>

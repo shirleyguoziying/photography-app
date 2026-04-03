@@ -1,0 +1,11 @@
+<view class="page-container" style="padding:32rpx;">
+  <view class="section-card">
+    <view class="field-label">作品标题</view>
+    <input class="input" placeholder="输入标题..." value="{{item.title}}" bindinput="onTitleInput" />
+  </view>
+  <view class="section-card mt-md">
+    <view class="field-label">是否在首页展示</view>
+    <switch checked="{{item.isFeatured}}" bindchange="onFeaturedChange" color="#c8a97e" />
+  </view>
+  <button class="btn btn-primary mt-lg" bindtap="saveItem" loading="{{isSaving}}">保存</button>
+</view>

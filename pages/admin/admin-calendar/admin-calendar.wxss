@@ -1,0 +1,162 @@
+.calendar-page { min-height: 100vh; background: #ffffff; padding-bottom: 120rpx; }
+
+/* 月份导航 */
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.nav-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #666666;
+}
+
+.month-label { font-size: 32rpx; font-weight: 700; color: #1a1a1a; }
+
+/* 星期标题 */
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 16rpx 8rpx;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 22rpx;
+  color: #999999;
+  font-weight: 600;
+}
+
+/* 日历格子 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 8rpx;
+  gap: 4rpx;
+}
+
+.calendar-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8rpx 4rpx;
+  border-radius: 8rpx;
+  min-height: 80rpx;
+  gap: 4rpx;
+}
+
+.calendar-cell.empty { opacity: 0; pointer-events: none; }
+.calendar-cell.past .day-num { color: #cccccc; }
+
+.calendar-cell.today .day-num {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-cell.selected { background: #f8f6f2; }
+.calendar-cell.selected .day-num { color: #c8a97e; font-weight: 700; }
+.calendar-cell.has-events { cursor: pointer; }
+
+.day-num { font-size: 26rpx; color: #1a1a1a; }
+
+/* 事件圆点（颜色区分状态） */
+.event-dots { display: flex; gap: 4rpx; }
+.event-dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: #c8a97e; }
+.event-dot.pending { background: #f59e0b; }
+.event-dot.confirmed { background: #10b981; }
+.event-dot.cancelled { background: #d1d5db; }
+
+/* 加载提示 */
+.loading-tip {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999999;
+  font-size: 26rpx;
+}
+
+/* 选中日详情 */
+.day-detail { padding: 24rpx; border-top: 1rpx solid #f0f0f0; margin-top: 8rpx; }
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.detail-date { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
+.detail-count { font-size: 24rpx; color: #c8a97e; font-weight: 600; }
+
+.no-event { color: #999999; font-size: 26rpx; text-align: center; padding: 40rpx 0; }
+
+.event-list { display: flex; flex-direction: column; gap: 16rpx; }
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: #f8f8f8;
+  border-radius: 16rpx;
+  padding: 24rpx 20rpx;
+}
+
+/* 左侧时间列 */
+.event-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  min-width: 80rpx;
+}
+
+.event-time { font-size: 30rpx; font-weight: 700; color: #c8a97e; }
+.event-dur { font-size: 20rpx; color: #999999; }
+
+/* 中间信息 */
+.event-info { flex: 1; display: flex; flex-direction: column; gap: 8rpx; }
+
+.event-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.event-client { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
+
+.event-location { font-size: 22rpx; color: #666666; }
+.event-style { font-size: 22rpx; color: #c8a97e; }
+
+/* 右侧箭头 */
+.chevron { font-size: 36rpx; color: #cccccc; }
+
+/* 状态徽章 */
+.status-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 9999rpx;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.status-pending { background: #fef3c7; color: #d97706; }
+.status-badge.status-confirmed { background: #d1fae5; color: #059669; }
+.status-badge.status-shooting_today { background: #dbeafe; color: #2563eb; }
+.status-badge.status-post_processing { background: #ede9fe; color: #7c3aed; }
+.status-badge.status-delivered { background: #fce7f3; color: #db2777; }
+.status-badge.status-completed { background: #f3f4f6; color: #374151; }
+.status-badge.status-cancelled { background: #f3f4f6; color: #9ca3af; }

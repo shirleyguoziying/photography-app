@@ -1,0 +1,50 @@
+<view class="admin-home">
+  <!-- Greeting -->
+  <view class="greeting-bar">
+    <text class="greeting-text">你好，{{photographer.displayName}} 👋</text>
+    <text class="greeting-date">{{todayStr}}</text>
+  </view>
+
+  <!-- Stats Row -->
+  <view class="stats-row">
+    <view class="stat-card">
+      <text class="stat-num">{{stats.pendingCount}}</text>
+      <text class="stat-label">待确认</text>
+    </view>
+    <view class="stat-card accent">
+      <text class="stat-num">{{stats.todayCount}}</text>
+      <text class="stat-label">今日拍摄</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-num">{{stats.deliveryCount}}</text>
+      <text class="stat-label">待发片</text>
+    </view>
+  </view>
+
+  <!-- Today's Shoots -->
+  <view class="section" wx:if="{{todayOrders.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">今日拍摄</text>
+    </view>
+    <order-card
+      wx:for="{{todayOrders}}"
+      wx:key="orderId"
+      item="{{item}}"
+      bind:tap="onOrderTap"
+    />
+  </view>
+
+  <!-- Pending Confirmation -->
+  <view class="section" wx:if="{{pendingOrders.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">待确认预约</text>
+      <text class="view-all" bindtap="goToOrders">全部 ›</text>
+    </view>
+    <order-card
+      wx:for="{{pendingOrders}}"
+      wx:key="orderId"
+      item="{{item}}"
+      bind:tap="onOrderTap"
+    />
+  </view>
+</view>

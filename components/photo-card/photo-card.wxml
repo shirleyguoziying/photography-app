@@ -1,0 +1,10 @@
+<view class="photo-card {{size}}" bindtap="onTap">
+  <image class="photo-img" src="{{item.thumbnailUrl || item.imageUrl}}" mode="aspectFill" lazy-load />
+  <view class="photo-overlay" wx:if="{{showOverlay}}">
+    <view class="tag-list">
+      <text wx:for="{{item.styleTags}}" wx:key="*this" class="tag">{{item}}</text>
+    </view>
+    <text class="photo-title" wx:if="{{item.title}}">{{item.title}}</text>
+  </view>
+  <view class="featured-badge" wx:if="{{item.isFeatured && showBadge}}">精选</view>
+</view>

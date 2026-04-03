@@ -1,0 +1,3 @@
+<view class="badge" style="color: {{color}}; background: {{bgColor}};">
+  {{label}}
+</view>

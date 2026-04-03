@@ -1,0 +1,29 @@
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-photo, .sk-line, .sk-block {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8rpx;
+}
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; padding: 24rpx; }
+.skeleton-photo { aspect-ratio: 3/4; border-radius: 16rpx; }
+
+.list { padding: 24rpx; display: flex; flex-direction: column; gap: 24rpx; }
+.skeleton-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.sk-line { height: 28rpx; }
+.sk-line.wide { width: 80%; }
+.sk-line.medium { width: 60%; }
+.sk-line.short { width: 40%; }

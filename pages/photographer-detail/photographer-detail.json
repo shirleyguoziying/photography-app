@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "摄影师主页",
+  "usingComponents": {
+    "photo-card": "../../components/photo-card/photo-card",
+    "loading-skeleton": "../../components/loading-skeleton/loading-skeleton"
+  }
+}

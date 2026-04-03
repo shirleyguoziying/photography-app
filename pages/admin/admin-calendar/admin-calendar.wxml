@@ -1,0 +1,81 @@
+<view class="calendar-page">
+  <!-- 月份导航 -->
+  <view class="month-nav">
+    <view class="nav-btn" bindtap="prevMonth">‹</view>
+    <text class="month-label">{{currentYear}}年{{currentMonth}}月</text>
+    <view class="nav-btn" bindtap="nextMonth">›</view>
+  </view>
+
+  <!-- 星期标题行 -->
+  <view class="weekday-row">
+    <text wx:for="{{weekdays}}" wx:key="*this" class="weekday">{{item}}</text>
+  </view>
+
+  <!-- 日历格子 -->
+  <view class="calendar-grid">
+    <view
+      wx:for="{{calendarDays}}"
+      wx:key="index"
+      class="calendar-cell {{item.date ? '' : 'empty'}} {{item.isToday ? 'today' : ''}} {{item.isPast ? 'past' : ''}} {{selectedDate === item.date ? 'selected' : ''}} {{item.date && scheduleMap[item.date] ? 'has-events' : ''}}"
+      bindtap="onDayTap"
+      data-date="{{item.date}}"
+    >
+      <text class="day-num">{{item.day}}</text>
+      <view class="event-dots" wx:if="{{item.date && scheduleMap[item.date]}}">
+        <view
+          wx:for="{{scheduleMap[item.date].slice(0, 3)}}"
+          wx:key="orderId"
+          wx:for-item="order"
+          class="event-dot {{order.status}}"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{isLoading}}" class="loading-tip">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 选中日的预约列表 -->
+  <view class="day-detail" wx:if="{{selectedDate && !isLoading}}">
+    <view class="detail-header">
+      <text class="detail-date">{{selectedDate}}</text>
+      <text class="detail-count" wx:if="{{selectedDayOrders.length > 0}}">共 {{selectedDayOrders.length}} 单</text>
+    </view>
+
+    <view wx:if="{{selectedDayOrders.length === 0}}" class="no-event">
+      <text>当日暂无拍摄安排</text>
+    </view>
+
+    <view wx:else class="event-list">
+      <view
+        wx:for="{{selectedDayOrders}}"
+        wx:key="orderId"
+        class="event-item"
+        bindtap="goToOrderDetail"
+        data-order-id="{{item.orderId}}"
+      >
+        <!-- 时间 + 时长 -->
+        <view class="event-left">
+          <text class="event-time">{{item.shootTime || '--:--'}}</text>
+          <text class="event-dur">{{item.duration}}h</text>
+        </view>
+
+        <!-- 主信息 -->
+        <view class="event-info">
+          <view class="event-top-row">
+            <text class="event-client">{{item.clientName}}</text>
+            <view class="status-badge status-{{item.status}}">{{item.statusLabel}}</view>
+          </view>
+          <text class="event-location">📍 {{item.location.name || '地点未选'}}</text>
+          <text class="event-style" wx:if="{{item.stylePreferences.tags.length > 0}}">
+            {{item.stylePreferences.tags.join(' · ')}}
+          </text>
+        </view>
+
+        <text class="chevron">›</text>
+      </view>
+    </view>
+  </view>
+</view>

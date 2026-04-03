@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "作品管理",
+  "usingComponents": {
+    "photo-card": "../../../components/photo-card/photo-card",
+    "custom-tab-bar": "../../../components/custom-tab-bar/index"
+  }
+}

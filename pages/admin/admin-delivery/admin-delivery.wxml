@@ -1,0 +1,34 @@
+<view class="delivery-page">
+  <view class="upload-zone" bindtap="choosePhotos">
+    <text class="upload-icon">📤</text>
+    <text class="upload-title">点击上传客片</text>
+    <text class="upload-hint">支持批量上传，每次最多20张</text>
+  </view>
+
+  <view class="progress-bar" wx:if="{{isUploading}}">
+    <view class="progress-fill" style="width: {{uploadProgress}}%;" />
+    <text class="progress-text">已上传 {{uploadedCount}}/{{totalCount}} 张</text>
+  </view>
+
+  <view class="uploaded-grid" wx:if="{{uploadedPhotos.length > 0}}">
+    <view class="grid-header">
+      <text class="grid-count">已上传 {{uploadedPhotos.length}} 张</text>
+    </view>
+    <view class="photo-grid">
+      <view
+        wx:for="{{uploadedPhotos}}"
+        wx:key="photoId"
+        class="photo-thumb-wrap"
+      >
+        <image class="photo-thumb" src="{{item.thumbnailUrl}}" mode="aspectFill" />
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-actions safe-bottom" wx:if="{{uploadedPhotos.length > 0 && !isUploading}}">
+    <button class="btn btn-ghost" bindtap="choosePhotos">继续上传</button>
+    <button class="btn btn-accent" bindtap="finalizeDelivery" loading="{{isFinalizing}}">
+      发送给客户
+    </button>
+  </view>
+</view>

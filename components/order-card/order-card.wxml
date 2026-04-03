@@ -1,0 +1,28 @@
+<view class="order-card" bindtap="onTap">
+  <view class="card-header">
+    <view class="order-meta">
+      <text class="order-id">订单 #{{item.orderId}}</text>
+      <text class="order-date">{{item.shootDate}} {{item.shootTime}}</text>
+    </view>
+    <status-badge status="{{item.status}}" />
+  </view>
+  <view class="divider" />
+  <view class="card-body">
+    <view class="info-row">
+      <text class="info-icon">📍</text>
+      <text class="info-text">{{item.location.name}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-icon">🎨</text>
+      <text class="info-text">{{item.styleTags.join(' · ')}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-icon">⏱</text>
+      <text class="info-text">{{item.duration}}小时</text>
+    </view>
+  </view>
+  <view class="card-footer" wx:if="{{item.price}}">
+    <text class="price">¥{{item.price}}</text>
+    <text class="payment-status">{{item.paymentStatus === 'paid' ? '已付款' : '待付款'}}</text>
+  </view>
+</view>

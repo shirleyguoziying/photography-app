@@ -1,0 +1,83 @@
+.delivery-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  padding-bottom: 80rpx;
+}
+
+.delivery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  background: #1a1a1a;
+}
+
+.total-count { font-size: 28rpx; font-weight: 600; color: #ffffff; display: block; }
+.selected-count { font-size: 24rpx; color: #c8a97e; display: block; margin-top: 4rpx; }
+
+.download-btn {
+  padding: 16rpx 32rpx;
+  border: 2rpx solid #c8a97e;
+  border-radius: 9999rpx;
+  color: #c8a97e;
+  font-size: 26rpx;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4rpx;
+}
+
+.photo-item {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.photo-thumb { width: 100%; height: 100%; display: block; }
+
+.select-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+
+.select-check {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+.select-check.checked {
+  background: #c8a97e;
+  border-color: #c8a97e;
+}
+
+.photo-item.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 4rpx solid #c8a97e;
+  pointer-events: none;
+}
+
+.deadline-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(200,169,126,0.95);
+  padding: 20rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #ffffff;
+  font-weight: 600;
+}

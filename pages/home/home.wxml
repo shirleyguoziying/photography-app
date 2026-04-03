@@ -1,0 +1,59 @@
+<view class="page-container">
+  <!-- Hero Banner -->
+  <view class="hero-banner">
+    <view class="hero-content">
+      <text class="hero-title">专业摄影预约</text>
+      <text class="hero-sub">定格您的珍贵时刻</text>
+      <button class="btn-book" bindtap="goToBooking">立即预约</button>
+    </view>
+  </view>
+
+  <!-- Style Filter -->
+  <scroll-view class="style-filter" scroll-x>
+    <view class="filter-list">
+      <view
+        wx:for="{{styleFilters}}"
+        wx:key="*this"
+        class="filter-chip {{activeStyle === item ? 'active' : ''}}"
+        bindtap="onStyleFilter"
+        data-style="{{item}}"
+      >{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- Portfolio Grid -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">精选作品</text>
+    </view>
+
+    <loading-skeleton wx:if="{{isLoading}}" type="photo-grid" count="6" />
+
+    <view wx:else class="photo-masonry">
+      <view class="masonry-col">
+        <photo-card
+          wx:for="{{leftColumn}}"
+          wx:key="portfolioItemId"
+          item="{{item}}"
+          size="medium"
+          showOverlay
+          bind:tap="onPhotoTap"
+        />
+      </view>
+      <view class="masonry-col">
+        <photo-card
+          wx:for="{{rightColumn}}"
+          wx:key="portfolioItemId"
+          item="{{item}}"
+          size="medium"
+          showOverlay
+          bind:tap="onPhotoTap"
+        />
+      </view>
+    </view>
+
+    <view wx:if="{{!isLoading && hasMore}}" class="load-more" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+  </view>
+</view>

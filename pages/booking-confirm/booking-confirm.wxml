@@ -1,0 +1,70 @@
+<view class="confirm-page">
+  <view class="summary-header">
+    <text class="summary-title">请确认预约信息</text>
+  </view>
+
+  <view class="section-card">
+    <view class="confirm-row">
+      <text class="label">拍摄日期</text>
+      <text class="value">{{booking.preferredDate}}</text>
+    </view>
+    <view class="confirm-row">
+      <text class="label">拍摄时间</text>
+      <text class="value">{{booking.preferredTime}}</text>
+    </view>
+    <view class="confirm-row">
+      <text class="label">拍摄时长</text>
+      <text class="value">{{booking.duration}}小时</text>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="confirm-row">
+      <text class="label">拍摄地点</text>
+      <view class="value-col">
+        <text class="value">{{booking.location.name}}</text>
+        <text class="value-sub">{{booking.location.address}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="confirm-row">
+      <text class="label">服装套数</text>
+      <text class="value">{{booking.props.hasOwnOutfit ? booking.props.outfitCount + '套' : '不带服装'}}</text>
+    </view>
+    <view class="confirm-row" wx:if="{{booking.props.propItems.length > 0}}">
+      <text class="label">拍摄道具</text>
+      <text class="value">{{booking.props.propItems.join('、')}}</text>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="confirm-row">
+      <text class="label">风格标签</text>
+      <text class="value accent">{{booking.stylePreferences.tags.join(' · ')}}</text>
+    </view>
+    <view class="confirm-row" wx:if="{{booking.stylePreferences.mood}}">
+      <text class="label">色调氛围</text>
+      <text class="value">{{booking.stylePreferences.mood}}</text>
+    </view>
+    <view class="confirm-row" wx:if="{{booking.stylePreferences.specialRequests}}">
+      <text class="label">特别说明</text>
+      <text class="value">{{booking.stylePreferences.specialRequests}}</text>
+    </view>
+  </view>
+
+  <view class="ai-planning-teaser" bindtap="goToAiPlanning">
+    <view class="ai-icon">✨</view>
+    <view class="ai-text">
+      <text class="ai-title">AI 生成拍摄策划</text>
+      <text class="ai-sub">根据您的选择自动生成场景规划和时间轴</text>
+    </view>
+    <text class="arrow">›</text>
+  </view>
+
+  <view class="bottom-actions safe-bottom">
+    <button class="btn btn-outline" bindtap="goBack">修改</button>
+    <button class="btn btn-accent" bindtap="submitBooking" loading="{{isSubmitting}}">确认预约</button>
+  </view>
+</view>

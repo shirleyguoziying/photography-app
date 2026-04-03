@@ -1,0 +1,44 @@
+<view class="detail-page" wx:if="{{order}}">
+  <view class="status-header">
+    <status-badge status="{{order.status}}" />
+    <text class="order-id">{{order.orderId}}</text>
+  </view>
+
+  <view class="section-card">
+    <text class="section-title">拍摄信息</text>
+    <view class="detail-row"><text class="dl">日期</text><text class="dr">{{order.shootDate}} {{order.shootTime}}</text></view>
+    <view class="detail-row"><text class="dl">时长</text><text class="dr">{{order.duration}}小时</text></view>
+    <view class="detail-row"><text class="dl">地点</text><text class="dr">{{order.location.name}}</text></view>
+    <view class="detail-row"><text class="dl">风格</text><text class="dr">{{order.styleTags.join(' · ')}}</text></view>
+  </view>
+
+  <view class="section-card" wx:if="{{order.stylePreferences}}">
+    <text class="section-title">客户需求</text>
+    <view class="detail-row" wx:if="{{order.stylePreferences.mood}}">
+      <text class="dl">氛围</text>
+      <text class="dr">{{order.stylePreferences.mood}}</text>
+    </view>
+    <view class="detail-row" wx:if="{{order.stylePreferences.specialRequests}}">
+      <text class="dl">备注</text>
+      <text class="dr">{{order.stylePreferences.specialRequests}}</text>
+    </view>
+    <view class="detail-row" wx:if="{{order.props}}">
+      <text class="dl">服装道具</text>
+      <text class="dr">{{order.props.outfitCount}}套服装，{{order.props.propItems.join('、') || '无道具'}}</text>
+    </view>
+  </view>
+
+  <!-- Action Buttons -->
+  <view class="action-group" wx:if="{{order.status === 'pending_confirmation'}}">
+    <button class="btn btn-outline" bindtap="rejectOrder">拒绝</button>
+    <button class="btn btn-accent" bindtap="confirmOrder" loading="{{isActing}}">确认接单</button>
+  </view>
+
+  <view class="action-group" wx:elif="{{order.status === 'confirmed' || order.status === 'shooting_today'}}">
+    <button class="btn btn-primary" bindtap="completeOrder" loading="{{isActing}}">标记拍摄完成</button>
+  </view>
+
+  <view class="action-group" wx:elif="{{order.status === 'post_processing'}}">
+    <button class="btn btn-accent" bindtap="goToDelivery">上传客片</button>
+  </view>
+</view>

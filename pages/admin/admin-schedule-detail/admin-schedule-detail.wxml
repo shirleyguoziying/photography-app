@@ -1,0 +1,6 @@
+<view class="page-container">
+  <view class="date-title">{{date}} 的拍摄安排</view>
+  <view class="order-list">
+    <order-card wx:for="{{orders}}" wx:key="orderId" item="{{item}}" bind:tap="onOrderTap" />
+  </view>
+</view>

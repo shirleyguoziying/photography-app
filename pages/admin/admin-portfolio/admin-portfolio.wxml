@@ -1,0 +1,30 @@
+<view class="portfolio-page">
+  <view class="toolbar">
+    <text class="total-count">共 {{portfolio.length}} 件作品</text>
+    <button class="add-btn" bindtap="uploadPhoto">+ 上传</button>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="setTab" data-tab="all">全部</view>
+    <view class="tab {{activeTab === 'featured' ? 'active' : ''}}" bindtap="setTab" data-tab="featured">首页精选</view>
+  </view>
+
+  <view class="photo-grid">
+    <view
+      wx:for="{{displayList}}"
+      wx:key="portfolioItemId"
+      class="photo-item"
+    >
+      <photo-card item="{{item}}" size="small" showBadge bind:tap="onPhotoTap" />
+      <view class="item-actions">
+        <view
+          class="action-chip {{item.isFeatured ? 'featured' : ''}}"
+          bindtap="toggleFeatured"
+          data-item-id="{{item.portfolioItemId}}"
+          data-featured="{{item.isFeatured}}"
+        >{{item.isFeatured ? '★ 精选' : '☆ 设为精选'}}</view>
+        <view class="action-chip delete" bindtap="deleteItem" data-item-id="{{item.portfolioItemId}}">删除</view>
+      </view>
+    </view>
+  </view>
+</view>

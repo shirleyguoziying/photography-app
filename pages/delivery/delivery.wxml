@@ -1,0 +1,35 @@
+<view class="delivery-page">
+  <view class="delivery-header">
+    <view class="count-info">
+      <text class="total-count">{{delivery.totalCount}} 张照片</text>
+      <text class="selected-count" wx:if="{{delivery.status === 'client_selecting'}}">
+        已选 {{delivery.selectedCount}} 张
+      </text>
+    </view>
+    <view class="download-btn" wx:if="{{delivery.downloadUrl}}" bindtap="downloadAll">
+      <text>下载全部</text>
+    </view>
+  </view>
+
+  <view class="photo-grid">
+    <view
+      wx:for="{{delivery.photos}}"
+      wx:key="photoId"
+      class="photo-item {{item.isSelected ? 'selected' : ''}}"
+      bindtap="onPhotoTap"
+      data-index="{{index}}"
+      data-photo="{{item}}"
+    >
+      <image class="photo-thumb" src="{{item.thumbnailUrl}}" mode="aspectFill" lazy-load />
+      <view class="select-overlay" wx:if="{{delivery.status === 'client_selecting'}}">
+        <view class="select-check {{item.isSelected ? 'checked' : ''}}">
+          <text wx:if="{{item.isSelected}}">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="deadline-banner" wx:if="{{delivery.selectionDeadline}}">
+    <text>请在 {{formattedDeadline}} 前完成挑选</text>
+  </view>
+</view>

@@ -1,0 +1,79 @@
+.portfolio-page { min-height: 100vh; background: #f5f5f5; padding-bottom: 120rpx; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.total-count { font-size: 26rpx; color: #666666; }
+
+.add-btn {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 9999rpx;
+  padding: 12rpx 32rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.add-btn::after { border: none; }
+
+.tabs {
+  display: flex;
+  background: #fff;
+  padding: 0 24rpx;
+  gap: 8rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.tab {
+  padding: 20rpx 16rpx;
+  font-size: 26rpx;
+  color: #999999;
+  position: relative;
+}
+
+.tab.active {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background: #1a1a1a;
+  border-radius: 2rpx;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4rpx;
+  padding: 16rpx;
+  gap: 16rpx;
+}
+
+.photo-item { display: flex; flex-direction: column; gap: 8rpx; }
+
+.item-actions { display: flex; gap: 8rpx; flex-wrap: wrap; }
+
+.action-chip {
+  font-size: 20rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 9999rpx;
+  border: 1rpx solid #e8e8e8;
+  color: #666666;
+}
+
+.action-chip.featured { border-color: #c8a97e; color: #c8a97e; background: rgba(200,169,126,0.1); }
+.action-chip.delete { border-color: #ff4d4f; color: #ff4d4f; }

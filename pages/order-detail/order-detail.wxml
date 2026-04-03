@@ -1,0 +1,36 @@
+<view class="detail-page" wx:if="{{order}}">
+  <view class="status-header">
+    <status-badge status="{{order.status}}" />
+    <text class="order-id">订单号 {{order.orderId}}</text>
+  </view>
+
+  <view class="section-card">
+    <view class="section-title">拍摄信息</view>
+    <view class="detail-row"><text class="dl">日期</text><text class="dr">{{order.shootDate}}</text></view>
+    <view class="detail-row"><text class="dl">时间</text><text class="dr">{{order.shootTime}}</text></view>
+    <view class="detail-row"><text class="dl">时长</text><text class="dr">{{order.duration}}小时</text></view>
+    <view class="detail-row"><text class="dl">地点</text><text class="dr">{{order.location.name}}</text></view>
+    <view class="detail-row"><text class="dl">风格</text><text class="dr accent">{{order.styleTags.join(' · ')}}</text></view>
+  </view>
+
+  <!-- Photo Delivery Section -->
+  <view class="section-card" wx:if="{{canViewDelivery}}">
+    <view class="section-title">客片返图</view>
+    <view class="delivery-status">
+      <text class="delivery-count">共 {{delivery.totalCount}} 张</text>
+      <text class="delivery-hint">点击查看并挑选您喜欢的照片</text>
+    </view>
+    <button class="btn btn-accent" bindtap="goToDelivery">查看客片</button>
+  </view>
+
+  <view class="section-card delivery-pending" wx:elif="{{order.status === 'post_processing'}}">
+    <text class="pending-icon">⏳</text>
+    <text class="pending-title">后期处理中</text>
+    <text class="pending-sub">照片预计 3-5 个工作日内发送</text>
+  </view>
+
+  <!-- Cancel Button -->
+  <view class="cancel-section" wx:if="{{canCancel}}">
+    <button class="btn btn-outline-danger" bindtap="cancelOrder">取消订单</button>
+  </view>
+</view>

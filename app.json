@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/home/home",
+    "pages/photographer-detail/photographer-detail",
+    "pages/booking/booking",
+    "pages/booking-confirm/booking-confirm",
+    "pages/booking-success/booking-success",
+    "pages/orders/orders",
+    "pages/order-detail/order-detail",
+    "pages/delivery/delivery",
+    "pages/profile/profile",
+    "pages/ai-planning/ai-planning",
+    "pages/admin/admin-home/admin-home",
+    "pages/admin/admin-calendar/admin-calendar",
+    "pages/admin/admin-schedule-detail/admin-schedule-detail",
+    "pages/admin/admin-orders/admin-orders",
+    "pages/admin/admin-order-detail/admin-order-detail",
+    "pages/admin/admin-delivery/admin-delivery",
+    "pages/admin/admin-portfolio/admin-portfolio",
+    "pages/admin/admin-portfolio-edit/admin-portfolio-edit",
+    "pages/profile-edit/profile-edit",
+    "pages/webview/webview",
+    "pages/about/about"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "摄影预约",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#1a1a1a",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/booking/booking", "text": "预约" },
+      { "pagePath": "pages/orders/orders", "text": "订单" },
+      { "pagePath": "pages/profile/profile", "text": "我的" },
+      { "pagePath": "pages/admin/admin-home/admin-home", "text": "工作台" },
+      { "pagePath": "pages/admin/admin-calendar/admin-calendar", "text": "日历" },
+      { "pagePath": "pages/admin/admin-orders/admin-orders", "text": "订单" },
+      { "pagePath": "pages/admin/admin-portfolio/admin-portfolio", "text": "作品" }
+    ]
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

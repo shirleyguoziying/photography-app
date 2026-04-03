@@ -1,0 +1,19 @@
+<view class="login-page">
+  <view class="hero">
+    <image class="logo" src="/assets/images/logo.png" mode="aspectFit" />
+    <text class="brand">摄影预约</text>
+    <text class="tagline">记录每一个珍贵时刻</text>
+  </view>
+
+  <view class="actions">
+    <button class="btn-wechat" bindtap="onWechatLogin" loading="{{isLoading}}">
+      <text>微信一键登录</text>
+    </button>
+    <text class="privacy-tip">
+      登录即代表您同意
+      <text class="link" bindtap="openPrivacy">《隐私政策》</text>
+      与
+      <text class="link" bindtap="openTerms">《用户协议》</text>
+    </text>
+  </view>
+</view>

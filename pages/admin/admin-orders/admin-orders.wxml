@@ -1,0 +1,11 @@
+<view class="page-container">
+  <scroll-view class="status-tabs" scroll-x>
+    <view class="tab-list">
+      <view wx:for="{{statusTabs}}" wx:key="value" class="tab {{activeStatus === item.value ? 'active' : ''}}" bindtap="onStatusFilter" data-value="{{item.value}}">{{item.label}}</view>
+    </view>
+  </scroll-view>
+  <view class="order-list" wx:if="{{orders.length > 0}}">
+    <order-card wx:for="{{orders}}" wx:key="orderId" item="{{item}}" bind:tap="onOrderTap" />
+  </view>
+  <view class="empty-state" wx:else><text>暂无订单</text></view>
+</view>

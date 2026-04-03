@@ -1,0 +1,1 @@
+<view class="props-selector"><slot /></view>

@@ -1,0 +1,21 @@
+<view class="edit-page">
+  <view class="avatar-section" bindtap="changeAvatar">
+    <image class="avatar" src="{{user.avatarUrl || '/assets/images/placeholder-avatar.png'}}" mode="aspectFill" />
+    <text class="avatar-hint">点击更换头像</text>
+  </view>
+
+  <view class="form-card">
+    <view class="form-row">
+      <text class="form-label">昵称</text>
+      <input
+        class="form-input"
+        placeholder="请输入昵称"
+        value="{{form.nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+      />
+    </view>
+  </view>
+
+  <button class="btn btn-primary save-btn" bindtap="save" loading="{{isSaving}}">保存</button>
+</view>
