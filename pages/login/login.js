@@ -5,6 +5,17 @@ Page({
     isLoading: false,
   },
 
+  onLoad() {
+    this.autoLogin()
+  },
+
+  async autoLogin() {
+    const app = getApp()
+    app.globalData.role = 'user'
+    app.globalData.user = { nickName: '用户', role: 'user' }
+    wx.switchTab({ url: '/pages/home/home' })
+  },
+
   async onWechatLogin() {
     if (this.data.isLoading) return
     this.setData({ isLoading: true })

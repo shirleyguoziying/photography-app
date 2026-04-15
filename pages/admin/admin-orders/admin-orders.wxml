@@ -1,11 +1,69 @@
-<view class="page-container">
-  <scroll-view class="status-tabs" scroll-x>
-    <view class="tab-list">
-      <view wx:for="{{statusTabs}}" wx:key="value" class="tab {{activeStatus === item.value ? 'active' : ''}}" bindtap="onStatusFilter" data-value="{{item.value}}">{{item.label}}</view>
+<view class="page">
+  <!-- 返回按钮 -->
+  <view class="back-bar" bindtap="goBack">
+    <text class="back-icon">‹</text>
+    <text class="back-text">返回工作台</text>
+  </view>
+
+  <!-- 状态标签页 -->
+  <scroll-view class="tabs-bar" scroll-x enable-flex>
+    <view class="tabs-inner">
+      <view
+        wx:for="{{statusTabs}}"
+        wx:key="value"
+        class="tab {{activeStatus === item.value ? 'tab-active' : ''}}"
+        bindtap="onTabTap"
+        data-value="{{item.value}}"
+      >{{item.label}}</view>
     </view>
   </scroll-view>
-  <view class="order-list" wx:if="{{orders.length > 0}}">
-    <order-card wx:for="{{orders}}" wx:key="orderId" item="{{item}}" bind:tap="onOrderTap" />
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="center-tip"><text>加载中...</text></view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{bookings.length === 0}}" class="center-tip"><text>暂无预约记录</text></view>
+
+  <!-- 预约列表 -->
+  <view wx:else class="booking-list">
+    <view
+      wx:for="{{bookings}}"
+      wx:key="_id"
+      class="booking-card"
+      hover-class="card-hover"
+      bindtap="goToDetail"
+      data-id="{{item._id}}"
+    >
+      <!-- 顶部：日期 + 状态 -->
+      <view class="card-header">
+        <view class="card-date-block">
+          <text class="card-date">{{item.preferredDate}}</text>
+          <text class="card-time">{{item.preferredTime}}  ·  {{item.duration}}h</text>
+        </view>
+        <view class="status-pill status-{{item.status}}">{{item.statusLabel}}</view>
+      </view>
+
+      <!-- 中部：客户 + 角色 -->
+      <view class="card-body">
+        <view class="card-row">
+          <text class="card-icon">👤</text>
+          <text class="card-text">{{item.clientName}}  ·  {{item.peopleCount}}人</text>
+        </view>
+        <view class="card-row" wx:if="{{item.characterName}}">
+          <text class="card-icon">🎭</text>
+          <text class="card-text accent">{{item.characterName}}</text>
+        </view>
+        <view class="card-row" wx:if="{{item.locationName}}">
+          <text class="card-icon">📍</text>
+          <text class="card-text">{{item.locationName}}</text>
+        </view>
+        <view class="card-row" wx:if="{{item.shootPrefLabel}}">
+          <text class="card-icon">🎬</text>
+          <text class="card-text">{{item.shootPrefLabel}}</text>
+        </view>
+      </view>
+
+      <view class="card-arrow">›</view>
+    </view>
   </view>
-  <view class="empty-state" wx:else><text>暂无订单</text></view>
 </view>

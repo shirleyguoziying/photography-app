@@ -1,54 +1,118 @@
-const orderService = require('../../services/orderService')
-
-const STATUS_TABS = [
-  { value: '', label: '全部' },
-  { value: 'pending_confirmation', label: '待确认' },
-  { value: 'confirmed', label: '已确认' },
-  { value: 'post_processing', label: '后期中' },
-  { value: 'delivered', label: '客片已发' },
-  { value: 'completed', label: '已完成' },
-]
+const STATUS_LABEL = {
+  pending: '待确认',
+  confirmed: '已确认',
+  completed: '已完成',
+  cancelled: '已取消'
+}
 
 Page({
   data: {
-    statusTabs: STATUS_TABS,
+    statusTabs: [
+      { value: '', label: '全部' },
+      { value: 'pending', label: '待确认' },
+      { value: 'confirmed', label: '已确认' },
+      { value: 'completed', label: '已完成' },
+      { value: 'cancelled', label: '已取消' }
+    ],
     activeStatus: '',
     orders: [],
-    isLoading: true,
+    isLoading: false
   },
 
   onShow() {
-    if (typeof this.getTabBar === 'function') {
-      this.getTabBar().setSelected('pages/orders/orders')
-    }
+    this.loadOrders()
+  },
+
+  onLoad() {
     this.loadOrders()
   },
 
   onPullDownRefresh() {
-    this.loadOrders().finally(() => wx.stopPullDownRefresh())
+    this.loadOrders()
+    wx.stopPullDownRefresh()
   },
 
-  async loadOrders() {
+  loadOrders() {
     this.setData({ isLoading: true })
+    this._loadFromCloud()
+  },
+
+  async _loadFromCloud() {
     try {
-      const { list } = await orderService.listOrders({ status: this.data.activeStatus })
-      this.setData({ orders: list, isLoading: false })
+      const res = await wx.cloud.callFunction({
+        name: 'getBookings',
+        data: {}
+      })
+      
+      if (res.result?.success) {
+        const allOrders = res.result.bookings || []
+        this._processOrders(allOrders)
+      } else {
+        this._loadFromLocal()
+      }
     } catch (e) {
-      this.setData({ isLoading: false })
+      console.log('云端读取失败:', e.message)
+      this._loadFromLocal()
     }
   },
 
+  _loadFromLocal() {
+    try {
+      const allOrders = wx.getStorageSync('photo_orders') || []
+      this._processOrders(allOrders)
+    } catch (e) {
+      console.error('Load orders error:', e)
+      this.setData({
+        orders: [],
+        isLoading: false
+      })
+    }
+  },
+
+  _processOrders(allOrders) {
+    let filteredOrders = allOrders
+    if (this.data.activeStatus) {
+      filteredOrders = allOrders.filter(order => order.status === this.data.activeStatus)
+    }
+    
+    const formattedOrders = filteredOrders.map(order => {
+      const locationName = order.location?.name || order.locationName || ''
+      const characterName = order.props?.characterName || order.characterName || ''
+      const statusLabel = STATUS_LABEL[order.status] || order.status
+      
+      return {
+        ...order,
+        locationName,
+        characterName,
+        statusLabel,
+        clientName: characterName || order.clientName || '预约订单'
+      }
+    })
+    
+    this.setData({
+      orders: formattedOrders,
+      isLoading: false
+    })
+  },
+
   onStatusFilter(e) {
-    this.setData({ activeStatus: e.currentTarget.dataset.value })
+    const status = e.currentTarget.dataset.value
+    this.setData({ activeStatus: status })
     this.loadOrders()
   },
 
   onOrderTap(e) {
-    const { item } = e.detail
-    wx.navigateTo({ url: `/pages/order-detail/order-detail?orderId=${item.orderId}` })
+    const orderId = e.currentTarget.dataset.id
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?orderId=${orderId}`
+    }).catch(() => {
+      wx.showToast({ title: '页面跳转失败', icon: 'none' })
+    })
   },
 
   goToBooking() {
-    wx.switchTab({ url: '/pages/booking/booking' })
-  },
+    wx.navigateTo({ url: '/pages/booking/booking' }).catch(() => {
+      wx.showToast({ title: '页面跳转失败', icon: 'none' })
+    })
+  }
 })

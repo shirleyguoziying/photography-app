@@ -1,44 +1,200 @@
-<view class="detail-page" wx:if="{{order}}">
-  <view class="status-header">
-    <status-badge status="{{order.status}}" />
-    <text class="order-id">{{order.orderId}}</text>
+<!-- 返回按钮 -->
+<view class="back-bar" bindtap="goBack">
+  <text class="back-icon">‹</text>
+  <text class="back-text">返回</text>
+</view>
+
+<!-- 加载中 -->
+<view wx:if="{{loading}}" class="center-tip"><text>加载中...</text></view>
+
+<view wx:elif="{{booking}}" class="detail-page">
+
+  <!-- 状态 + ID -->
+  <view class="status-card">
+    <view class="status-pill status-{{booking.status}}">{{booking.statusLabel}}</view>
+    <text class="booking-id"># {{booking._id}}</text>
   </view>
 
+  <!-- 时间 & 地点 -->
   <view class="section-card">
     <text class="section-title">拍摄信息</text>
-    <view class="detail-row"><text class="dl">日期</text><text class="dr">{{order.shootDate}} {{order.shootTime}}</text></view>
-    <view class="detail-row"><text class="dl">时长</text><text class="dr">{{order.duration}}小时</text></view>
-    <view class="detail-row"><text class="dl">地点</text><text class="dr">{{order.location.name}}</text></view>
-    <view class="detail-row"><text class="dl">风格</text><text class="dr">{{order.styleTags.join(' · ')}}</text></view>
-  </view>
-
-  <view class="section-card" wx:if="{{order.stylePreferences}}">
-    <text class="section-title">客户需求</text>
-    <view class="detail-row" wx:if="{{order.stylePreferences.mood}}">
-      <text class="dl">氛围</text>
-      <text class="dr">{{order.stylePreferences.mood}}</text>
+    <view class="detail-row">
+      <text class="dl">日期</text>
+      <text class="dr">{{booking.preferredDate}}</text>
     </view>
-    <view class="detail-row" wx:if="{{order.stylePreferences.specialRequests}}">
-      <text class="dl">备注</text>
-      <text class="dr">{{order.stylePreferences.specialRequests}}</text>
+    <view class="detail-row">
+      <text class="dl">时间</text>
+      <text class="dr">{{booking.preferredTime}}  ·  {{booking.duration}}小时</text>
     </view>
-    <view class="detail-row" wx:if="{{order.props}}">
-      <text class="dl">服装道具</text>
-      <text class="dr">{{order.props.outfitCount}}套服装，{{order.props.propItems.join('、') || '无道具'}}</text>
+    <view class="detail-row">
+      <text class="dl">地点</text>
+      <view class="dr-col">
+        <text class="dr">{{booking.location.name || '未填写'}}</text>
+        <text class="dr-sub" wx:if="{{booking.location.address}}">{{booking.location.address}}</text>
+      </view>
+    </view>
+    <view class="detail-row">
+      <text class="dl">人数</text>
+      <text class="dr">{{booking.peopleCount}} 人</text>
     </view>
   </view>
 
-  <!-- Action Buttons -->
-  <view class="action-group" wx:if="{{order.status === 'pending_confirmation'}}">
-    <button class="btn btn-outline" bindtap="rejectOrder">拒绝</button>
-    <button class="btn btn-accent" bindtap="confirmOrder" loading="{{isActing}}">确认接单</button>
+  <!-- 角色信息 -->
+  <view class="section-card">
+    <text class="section-title">角色信息</text>
+    <view class="detail-row">
+      <text class="dl">客户</text>
+      <text class="dr">{{booking.clientName}}</text>
+    </view>
+    <view class="detail-row">
+      <text class="dl">出演角色</text>
+      <text class="dr accent">{{booking.props.characterName || '未填写'}}</text>
+    </view>
+    <view class="ref-section" wx:if="{{booking.props.referenceImages.length > 0}}">
+      <text class="ref-label">角色参考图</text>
+      <scroll-view class="ref-scroll" scroll-x enable-flex>
+        <image
+          wx:for="{{booking.props.referenceImages}}"
+          wx:key="*this"
+          class="ref-img"
+          src="{{item}}"
+          mode="aspectFill"
+          show-menu-by-longpress
+        />
+      </scroll-view>
+    </view>
   </view>
 
-  <view class="action-group" wx:elif="{{order.status === 'confirmed' || order.status === 'shooting_today'}}">
-    <button class="btn btn-primary" bindtap="completeOrder" loading="{{isActing}}">标记拍摄完成</button>
+  <!-- 道具 -->
+  <view class="section-card" wx:if="{{booking.selectedProps.length > 0}}">
+    <text class="section-title">选用道具</text>
+    <view class="prop-row">
+      <view wx:for="{{booking.selectedProps}}" wx:key="_id" class="prop-chip">
+        <image wx:if="{{item.image}}" class="prop-chip-img" src="{{item.image}}" mode="aspectFill" />
+        <text class="prop-chip-name">{{item.name}}</text>
+      </view>
+    </view>
+    <text class="props-notes" wx:if="{{booking.props.notes}}">备注：{{booking.props.notes}}</text>
   </view>
 
-  <view class="action-group" wx:elif="{{order.status === 'post_processing'}}">
-    <button class="btn btn-accent" bindtap="goToDelivery">上传客片</button>
+  <!-- 偏好 & 色调 -->
+  <view class="section-card">
+    <text class="section-title">拍摄偏好</text>
+    <view class="detail-row">
+      <text class="dl">拍摄偏好</text>
+      <text class="dr accent">{{booking.shootPrefLabel || '未选择'}}</text>
+    </view>
+    <view class="detail-row">
+      <text class="dl">色调参考</text>
+      <view class="color-display">
+        <view class="color-swatch" style="background: rgb({{booking.colorR}},{{booking.colorG}},{{booking.colorB}})" />
+        <text class="color-hex">{{booking.colorHex}}</text>
+        <text class="color-rgb">RGB({{booking.colorR}}, {{booking.colorG}}, {{booking.colorB}})</text>
+      </view>
+    </view>
+    <view class="detail-row" wx:if="{{booking.specialRequests}}">
+      <text class="dl">特别说明</text>
+      <text class="dr">{{booking.specialRequests}}</text>
+    </view>
+  </view>
+
+  <!-- 收入记录（仅已完成订单显示） -->
+  <view class="section-card" wx:if="{{booking.status === 'completed'}}">
+    <view class="note-header">
+      <text class="section-title">本次收入</text>
+      <view class="note-edit-btn" bindtap="openIncomeInput">
+        {{booking.income ? '修改' : '记录'}}
+      </view>
+    </view>
+    <view wx:if="{{booking.income}}" class="income-display">
+      <text class="income-amount-text">¥ {{booking.income.amount}}</text>
+      <text wx:if="{{booking.income.note}}" class="income-note-text">{{booking.income.note}}</text>
+    </view>
+    <text wx:else class="note-empty">未记录收入，点击右上角记录</text>
+  </view>
+
+  <!-- 摄影师备注 -->
+  <view class="section-card">
+    <view class="note-header">
+      <text class="section-title">摄影师备注</text>
+      <view class="note-edit-btn" bindtap="openNoteInput">编辑</view>
+    </view>
+    <view wx:if="{{showNoteInput}}" class="note-input-area">
+      <textarea
+        class="note-textarea"
+        value="{{noteValue}}"
+        bindinput="onNoteInput"
+        placeholder="添加备注，仅摄影师可见..."
+        maxlength="300"
+        auto-focus
+      />
+      <button class="note-save-btn" hover-class="note-save-hover" bindtap="saveNote">保存备注</button>
+    </view>
+    <text wx:elif="{{booking.photographerNote}}" class="note-content">{{booking.photographerNote}}</text>
+    <text wx:else class="note-empty">暂无备注</text>
+  </view>
+
+</view>
+
+<!-- 返图管理入口（确认/完成订单可见） -->
+<view
+  wx:if="{{booking && (booking.status === 'confirmed' || booking.status === 'completed')}}"
+  class="delivery-entry"
+  bindtap="goToDelivery"
+>
+  <text class="delivery-entry-icon">🖼</text>
+  <text class="delivery-entry-label">管理返图</text>
+  <text class="delivery-entry-arrow">›</text>
+</view>
+
+<!-- 底部操作按钮 -->
+<view wx:if="{{booking}}" class="action-bar safe-bottom">
+  <block wx:if="{{booking.status === 'pending'}}">
+    <button class="action-btn btn-cancel" hover-class="btn-hover" bindtap="cancelBooking">取消预约</button>
+    <button class="action-btn btn-confirm" hover-class="btn-hover" bindtap="confirmBooking" loading="{{isActing}}">确认接单</button>
+  </block>
+  <block wx:elif="{{booking.status === 'confirmed'}}">
+    <button class="action-btn btn-cancel" hover-class="btn-hover" bindtap="cancelBooking">取消预约</button>
+    <button class="action-btn btn-complete" hover-class="btn-hover" bindtap="completeBooking" loading="{{isActing}}">标记已完成</button>
+  </block>
+  <view wx:else class="action-done">
+    <text>{{booking.status === 'completed' ? '此预约已完成' : '此预约已取消'}}</text>
+  </view>
+</view>
+
+<!-- 收入录入底部弹窗 -->
+<view wx:if="{{showIncomeInput}}" class="sheet-mask" catchtap="skipIncome" />
+<view wx:if="{{showIncomeInput}}" class="income-sheet">
+  <view class="income-sheet-handle" />
+  <text class="income-sheet-title">记录本次收入</text>
+
+  <view class="income-field">
+    <text class="income-field-label">金额（元） *</text>
+    <view class="income-input-wrap">
+      <text class="income-prefix">¥</text>
+      <input
+        class="income-input"
+        type="digit"
+        value="{{incomeAmount}}"
+        bindinput="onIncomeAmountInput"
+        placeholder="0.00"
+        focus="{{showIncomeInput}}"
+      />
+    </view>
+  </view>
+
+  <view class="income-field">
+    <text class="income-field-label">备注（选填）</text>
+    <input
+      class="income-input income-input-note"
+      value="{{incomeNote}}"
+      bindinput="onIncomeNoteInput"
+      placeholder="如：含道具押金、交通补贴等"
+    />
+  </view>
+
+  <view class="income-sheet-actions">
+    <button class="income-skip-btn" bindtap="skipIncome">跳过</button>
+    <button class="income-save-btn" hover-class="income-save-hover" bindtap="saveIncome">保存收入</button>
   </view>
 </view>

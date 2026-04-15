@@ -50,19 +50,47 @@
     <view class="step-title">选择拍摄地点</view>
 
     <view class="section-card">
-      <view class="field-label">拍摄地点</view>
-      <view class="location-btn" bindtap="chooseLocation">
-        <view wx:if="{{formData.location.name}}" class="location-selected">
-          <text class="location-name">{{formData.location.name}}</text>
-          <text class="location-addr">{{formData.location.address}}</text>
-        </view>
-        <view wx:else class="location-placeholder">
-          <text>📍 点击选择地点</text>
-        </view>
+      <!-- 方式一：地图选点 -->
+      <view class="field-label">方式一：地图选点</view>
+      <view class="location-map-btn" bindtap="chooseLocation">
+        <text class="map-btn-icon">📍</text>
+        <text class="map-btn-text">{{formData.location.latitude ? '重新在地图上选点' : '打开地图选择地点'}}</text>
         <text class="arrow">›</text>
       </view>
+
+      <!-- 地图选点后显示结果 -->
+      <view wx:if="{{formData.location.latitude}}" class="map-result">
+        <text class="map-result-name">{{formData.location.name}}</text>
+        <text class="map-result-addr">{{formData.location.address}}</text>
+        <text class="map-clear" bindtap="clearLocation">✕ 清除</text>
+      </view>
+
+      <view class="divider-row">
+        <view class="divider-line" />
+        <text class="divider-text">或手动填写</text>
+        <view class="divider-line" />
+      </view>
+
+      <!-- 方式二：手动填写 -->
+      <view class="field-label">方式二：手动填写</view>
+      <input
+        class="text-input"
+        placeholder="地点名称，如：颐和园、三里屯..."
+        value="{{formData.location.name}}"
+        bindinput="onLocationNameInput"
+        maxlength="50"
+      />
+      <input
+        class="text-input"
+        style="margin-top:16rpx;"
+        placeholder="详细地址（可选）"
+        value="{{formData.location.address}}"
+        bindinput="onLocationAddressInput"
+        maxlength="100"
+      />
     </view>
 
+    <!-- 地图预览（仅地图选点后显示） -->
     <view class="section-card" wx:if="{{formData.location.latitude}}">
       <map
         class="mini-map"
@@ -86,87 +114,209 @@
     </view>
   </view>
 
-  <!-- Step 2: 道具 & 服装 -->
+  <!-- Step 2: COS 角色 & 道具 -->
   <view wx:elif="{{currentStep === 2}}" class="step-content">
-    <view class="step-title">道具 & 服装</view>
+    <view class="step-title">角色 & 道具</view>
 
+    <!-- 拍摄人数 -->
     <view class="section-card">
-      <view class="field-label">您是否自带服装？</view>
-      <view class="radio-group">
-        <view class="radio-item {{formData.props.hasOwnOutfit ? 'active' : ''}}" bindtap="setHasOutfit" data-val="{{true}}">是，自带</view>
-        <view class="radio-item {{!formData.props.hasOwnOutfit ? 'active' : ''}}" bindtap="setHasOutfit" data-val="{{false}}">不带服装</view>
-      </view>
-    </view>
-
-    <view class="section-card" wx:if="{{formData.props.hasOwnOutfit}}">
-      <view class="field-label">服装套数</view>
+      <view class="field-label">拍摄人数</view>
       <view class="count-stepper">
-        <view class="stepper-btn" bindtap="decOutfitCount">－</view>
-        <text class="stepper-val">{{formData.props.outfitCount}}</text>
-        <view class="stepper-btn" bindtap="incOutfitCount">＋</view>
+        <view class="stepper-btn {{(formData.peopleCount || 1) <= 1 ? 'disabled' : ''}}" bindtap="decPeople">－</view>
+        <text class="stepper-val">{{formData.peopleCount || 1}} 人</text>
+        <view class="stepper-btn {{(formData.peopleCount || 1) >= 10 ? 'disabled' : ''}}" bindtap="incPeople">＋</view>
       </view>
     </view>
 
+    <!-- 角色信息 -->
     <view class="section-card">
-      <view class="field-label">拍摄道具（多选）</view>
-      <view class="tag-grid">
+      <view class="field-label">出演角色名 <text class="required-mark">*</text></view>
+      <input
+        class="text-input"
+        placeholder="如：芙宁娜、雷电将军、初音未来..."
+        value="{{formData.props.characterName}}"
+        bindinput="onCharacterNameInput"
+        maxlength="50"
+      />
+
+      <view class="field-label" style="margin-top:32rpx;">
+        角色参考图 <text class="required-mark">*</text>
+        <text class="field-hint">至少上传1张，最多9张</text>
+      </view>
+
+      <!-- 图片网格 -->
+      <view class="ref-image-grid">
+        <!-- 已上传的图片 -->
         <view
-          wx:for="{{propsOptions}}"
-          wx:key="key"
-          class="tag-chip {{formData.props.propItems.includes(item.key) ? 'active' : ''}}"
-          bindtap="toggleProp"
-          data-key="{{item.key}}"
-        >{{item.label}}</view>
+          wx:for="{{formData.props.referenceImages}}"
+          wx:key="*this"
+          class="ref-image-item"
+        >
+          <image class="ref-image" src="{{item}}" mode="aspectFill" />
+          <view class="ref-image-remove" bindtap="removeReferenceImage" data-index="{{index}}">✕</view>
+        </view>
+
+        <!-- 上传按钮 -->
+        <view
+          wx:if="{{formData.props.referenceImages.length < 9}}"
+          class="ref-image-add {{uploadingImages ? 'uploading' : ''}}"
+          bindtap="chooseReferenceImages"
+        >
+          <view wx:if="{{uploadingImages}}" class="upload-spinner" />
+          <view wx:else>
+            <text class="add-icon">＋</text>
+            <text class="add-label">上传图片</text>
+          </view>
+        </view>
       </view>
     </view>
 
+    <!-- 道具选择（云数据库加载） -->
     <view class="section-card">
-      <view class="field-label">道具备注（可选）</view>
+      <view class="field-label">拍摄道具（可选，多选）</view>
+
+      <!-- 加载中 -->
+      <view wx:if="{{propsLoading}}" class="props-loading">
+        <text>加载道具中...</text>
+      </view>
+
+      <!-- 道具卡片列表 -->
+      <view wx:elif="{{cloudProps.length > 0}}" class="pref-list">
+        <view
+          wx:for="{{cloudProps}}"
+          wx:key="_id"
+          class="pref-card {{formData.props.propItems.indexOf(item._id) > -1 ? 'pref-selected' : ''}}"
+          bindtap="toggleProp"
+          data-id="{{item._id}}"
+          hover-class="pref-hover"
+        >
+          <view class="pref-radio">
+            <view class="pref-radio-inner" wx:if="{{formData.props.propItems.indexOf(item._id) > -1}}" />
+          </view>
+          <view class="pref-text">
+            <text class="pref-title">{{item.name}}</text>
+            <text class="pref-desc" wx:if="{{item.description}}">{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 无道具时的提示 -->
+      <view wx:else class="props-empty">
+        <text>暂无可用道具，摄影师会在确认后补充</text>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="section-card">
+      <view class="field-label">其他备注（可选）</view>
       <textarea
         class="textarea"
-        placeholder="其他道具或特殊需求..."
+        placeholder="如有其他道具需求或特殊说明，请在此填写..."
         value="{{formData.props.notes}}"
         bindinput="onPropsNotesInput"
-        maxlength="200"
+        maxlength="300"
       />
     </view>
   </view>
 
-  <!-- Step 3: 拍摄风格 -->
+  <!-- Step 3: 拍摄偏好 & 色调 -->
   <view wx:elif="{{currentStep === 3}}" class="step-content">
-    <view class="step-title">拍摄风格偏好</view>
+    <view class="step-title">拍摄偏好</view>
 
+    <!-- 拍摄偏好：单选卡片 -->
     <view class="section-card">
-      <view class="field-label">风格标签（至少选1个）</view>
-      <view class="tag-grid">
+      <view class="field-label">拍摄偏好 <text class="required-mark">*</text></view>
+      <view class="pref-list">
         <view
-          wx:for="{{styleTags}}"
-          wx:key="*this"
-          class="tag-chip {{formData.stylePreferences.tags.includes(item) ? 'active' : ''}}"
-          bindtap="toggleStyleTag"
-          data-tag="{{item}}"
-        >{{item}}</view>
-      </view>
-    </view>
-
-    <view class="section-card">
-      <view class="field-label">整体色调氛围</view>
-      <view class="mood-grid">
-        <view
-          wx:for="{{moodOptions}}"
+          wx:for="{{shootPreferences}}"
           wx:key="value"
-          class="mood-item {{formData.stylePreferences.mood === item.value ? 'active' : ''}}"
-          bindtap="onMoodSelect"
+          class="pref-card {{formData.stylePreferences.shootPreference === item.value ? 'pref-selected' : ''}}"
+          bindtap="onShootPreferenceSelect"
           data-value="{{item.value}}"
-        >{{item.label}}</view>
+          hover-class="pref-hover"
+        >
+          <view class="pref-radio">
+            <view class="pref-radio-inner" wx:if="{{formData.stylePreferences.shootPreference === item.value}}" />
+          </view>
+          <view class="pref-text">
+            <text class="pref-title">{{item.title}}</text>
+            <text class="pref-desc">{{item.desc}}</text>
+          </view>
+        </view>
       </view>
     </view>
 
+    <!-- RGB 色调选择器 -->
+    <view class="section-card">
+      <view class="field-label">整体色调（可选）</view>
+
+      <!-- 颜色预览块 -->
+      <view class="color-preview-row">
+        <view
+          class="color-swatch"
+          style="background: rgb({{formData.stylePreferences.colorR}},{{formData.stylePreferences.colorG}},{{formData.stylePreferences.colorB}})"
+        />
+        <text class="color-hex">{{colorHex}}</text>
+        <text class="color-rgb-label">
+          RGB({{formData.stylePreferences.colorR}}, {{formData.stylePreferences.colorG}}, {{formData.stylePreferences.colorB}})
+        </text>
+      </view>
+
+      <!-- R 滑块 -->
+      <view class="slider-row">
+        <text class="slider-label slider-r">R</text>
+        <slider
+          class="rgb-slider"
+          min="0" max="255"
+          value="{{formData.stylePreferences.colorR}}"
+          activeColor="#ff4444"
+          backgroundColor="#f0f0f0"
+          block-color="#ffffff"
+          block-size="22"
+          bindchanging="onColorRChange"
+        />
+        <text class="slider-val">{{formData.stylePreferences.colorR}}</text>
+      </view>
+
+      <!-- G 滑块 -->
+      <view class="slider-row">
+        <text class="slider-label slider-g">G</text>
+        <slider
+          class="rgb-slider"
+          min="0" max="255"
+          value="{{formData.stylePreferences.colorG}}"
+          activeColor="#22c55e"
+          backgroundColor="#f0f0f0"
+          block-color="#ffffff"
+          block-size="22"
+          bindchanging="onColorGChange"
+        />
+        <text class="slider-val">{{formData.stylePreferences.colorG}}</text>
+      </view>
+
+      <!-- B 滑块 -->
+      <view class="slider-row">
+        <text class="slider-label slider-b">B</text>
+        <slider
+          class="rgb-slider"
+          min="0" max="255"
+          value="{{formData.stylePreferences.colorB}}"
+          activeColor="#3b82f6"
+          backgroundColor="#f0f0f0"
+          block-color="#ffffff"
+          block-size="22"
+          bindchanging="onColorBChange"
+        />
+        <text class="slider-val">{{formData.stylePreferences.colorB}}</text>
+      </view>
+    </view>
+
+    <!-- 特别说明 -->
     <view class="section-card">
       <view class="field-label">特别说明（可选）</view>
       <textarea
         class="textarea"
-        placeholder="例如：想要的感觉、参考摄影师、过敏/禁忌等..."
+        placeholder="例如：想要的构图感觉、参考摄影师、特殊需求等..."
         value="{{formData.stylePreferences.specialRequests}}"
         bindinput="onSpecialRequestInput"
         maxlength="500"
@@ -176,15 +326,17 @@
 
   <!-- Bottom Actions -->
   <view class="bottom-actions safe-bottom">
-    <button wx:if="{{currentStep > 0}}" class="btn btn-outline" bindtap="prevStep">上一步</button>
+    <button wx:if="{{currentStep > 0}}" class="btn btn-outline" hover-class="btn-hover-outline" bindtap="prevStep">上一步</button>
     <button
       wx:if="{{currentStep < 3}}"
-      class="btn btn-primary {{canNext ? '' : 'btn-disabled'}}"
+      class="btn {{currentStep === 2 ? (step2Valid ? 'btn-primary' : 'btn-inactive') : 'btn-primary'}}"
+      hover-class="{{currentStep === 2 && !step2Valid ? '' : 'btn-hover-primary'}}"
       bindtap="nextStep"
     >下一步</button>
     <button
       wx:elif="{{currentStep === 3}}"
-      class="btn btn-accent"
+      class="btn btn-primary"
+      hover-class="btn-hover-primary"
       bindtap="goToConfirm"
       loading="{{isSaving}}"
     >查看预约详情</button>

@@ -1,14 +1,19 @@
-.status-tabs {
-  background: #ffffff;
-  border-bottom: 1rpx solid #f0f0f0;
-  white-space: nowrap;
+.page { min-height: 100vh; background: #f5f5f5; }
+
+.back-bar {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 20rpx 24rpx 16rpx;
+  background: #fff;
 }
 
-.tab-list {
-  display: flex;
-  padding: 0 24rpx;
-  gap: 8rpx;
-}
+.back-icon { font-size: 44rpx; color: #1a1a1a; line-height: 1; margin-top: -4rpx; }
+.back-text { font-size: 28rpx; color: #1a1a1a; }
+
+/* 标签栏 */
+.tabs-bar { background: #fff; border-bottom: 1rpx solid #f0f0f0; }
+.tabs-inner { display: flex; padding: 0 16rpx; }
 
 .tab {
   padding: 24rpx 20rpx;
@@ -16,35 +21,78 @@
   color: #999999;
   flex-shrink: 0;
   position: relative;
+  white-space: nowrap;
 }
 
-.tab.active {
-  color: #1a1a1a;
-  font-weight: 600;
-}
-
-.tab.active::after {
+.tab-active { color: #1a1a1a; font-weight: 700; }
+.tab-active::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 50%;
+  bottom: 0; left: 50%;
   transform: translateX(-50%);
-  width: 40rpx;
-  height: 4rpx;
+  width: 40rpx; height: 4rpx;
   background: #1a1a1a;
   border-radius: 2rpx;
 }
 
-.order-list { padding: 24rpx; }
+.center-tip { text-align: center; color: #999; font-size: 28rpx; padding: 100rpx 0; }
 
-.empty-state {
+/* 列表 */
+.booking-list { padding: 20rpx 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+
+.booking-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 120rpx 48rpx;
   gap: 16rpx;
+  position: relative;
 }
 
-.empty-icon { font-size: 80rpx; }
-.empty-title { font-size: 32rpx; font-weight: 600; color: #1a1a1a; }
-.empty-sub { font-size: 26rpx; color: #999999; }
+.card-hover { opacity: 0.85; }
+
+/* 卡片顶部 */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.card-date-block { display: flex; flex-direction: column; gap: 4rpx; }
+.card-date { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.card-time { font-size: 24rpx; color: #999999; }
+
+/* 状态徽章 */
+.status-pill {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 6rpx 18rpx;
+  border-radius: 9999rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-pill.status-pending    { background: #fef3c7; color: #d97706; }
+.status-pill.status-confirmed  { background: #d1fae5; color: #059669; }
+.status-pill.status-completed  { background: #f3f4f6; color: #374151; }
+.status-pill.status-cancelled  { background: #fee2e2; color: #dc2626; }
+
+/* 卡片内容行 */
+.card-body { display: flex; flex-direction: column; gap: 10rpx; }
+
+.card-row { display: flex; align-items: center; gap: 10rpx; }
+.card-icon { font-size: 26rpx; width: 36rpx; }
+.card-text { font-size: 26rpx; color: #555555; }
+.card-text.accent { color: #7c3aed; font-weight: 600; }
+
+/* 右箭头 */
+.card-arrow {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36rpx;
+  color: #d0d0d0;
+}

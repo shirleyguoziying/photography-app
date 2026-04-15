@@ -81,3 +81,11 @@
   color: #ffffff;
   font-weight: 600;
 }
+
+.star-overlay {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  font-size: 32rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.5);
+}

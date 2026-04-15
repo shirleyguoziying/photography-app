@@ -1,34 +1,72 @@
-<view class="delivery-page">
-  <view class="upload-zone" bindtap="choosePhotos">
-    <text class="upload-icon">📤</text>
-    <text class="upload-title">点击上传客片</text>
-    <text class="upload-hint">支持批量上传，每次最多20张</text>
+<view class="page">
+
+  <!-- 返回 -->
+  <view class="back-bar" bindtap="goBack">
+    <text class="back-icon">‹</text>
+    <text class="back-text">返回订单</text>
   </view>
 
-  <view class="progress-bar" wx:if="{{isUploading}}">
-    <view class="progress-fill" style="width: {{uploadProgress}}%;" />
-    <text class="progress-text">已上传 {{uploadedCount}}/{{totalCount}} 张</text>
-  </view>
-
-  <view class="uploaded-grid" wx:if="{{uploadedPhotos.length > 0}}">
-    <view class="grid-header">
-      <text class="grid-count">已上传 {{uploadedPhotos.length}} 张</text>
+  <!-- 订单信息 -->
+  <view class="booking-bar" wx:if="{{bookingInfo}}">
+    <view class="booking-meta">
+      <text class="booking-date">{{bookingInfo.preferredDate}}</text>
+      <text class="booking-client">{{bookingInfo.clientName}}</text>
+      <text class="booking-char" wx:if="{{bookingInfo.characterName}}"> · 🎭 {{bookingInfo.characterName}}</text>
     </view>
-    <view class="photo-grid">
+    <view class="count-pills">
+      <text class="pill pill-total">{{photos.length}} 张</text>
+      <text class="pill pill-star">⭐ {{highlightCount}}</text>
+    </view>
+  </view>
+
+  <!-- 上传按钮 + 进度 -->
+  <view class="upload-row">
+    <view class="upload-btn {{uploading ? 'uploading' : ''}}" bindtap="chooseAndUpload">
+      <text class="upload-icon">＋</text>
+      <text class="upload-label">{{uploading ? '上传中 ' + uploadProgress : '添加照片'}}</text>
+    </view>
+    <text class="upload-hint">点击⭐标记优质返图，标记后将展示给客户</text>
+  </view>
+
+  <!-- 照片网格 -->
+  <view class="photo-grid" wx:if="{{photos.length > 0}}">
+    <view
+      wx:for="{{photos}}"
+      wx:key="_id"
+      class="photo-cell"
+    >
+      <!-- 缩略图 -->
+      <image
+        class="photo-img"
+        src="{{item.fileId}}"
+        mode="aspectFill"
+        bindtap="previewPhoto"
+        data-index="{{index}}"
+      />
+      <!-- 优质标记 -->
       <view
-        wx:for="{{uploadedPhotos}}"
-        wx:key="photoId"
-        class="photo-thumb-wrap"
+        class="star-btn {{item.isHighlight ? 'star-on' : 'star-off'}}"
+        catchtap="toggleHighlight"
+        data-id="{{item._id}}"
+        data-flag="{{item.isHighlight}}"
       >
-        <image class="photo-thumb" src="{{item.thumbnailUrl}}" mode="aspectFill" />
+        <text>⭐</text>
+      </view>
+      <!-- 删除 -->
+      <view
+        class="del-btn"
+        catchtap="deletePhoto"
+        data-id="{{item._id}}"
+        data-file-id="{{item.fileId}}"
+      >
+        <text class="del-icon">✕</text>
       </view>
     </view>
   </view>
 
-  <view class="bottom-actions safe-bottom" wx:if="{{uploadedPhotos.length > 0 && !isUploading}}">
-    <button class="btn btn-ghost" bindtap="choosePhotos">继续上传</button>
-    <button class="btn btn-accent" bindtap="finalizeDelivery" loading="{{isFinalizing}}">
-      发送给客户
-    </button>
+  <!-- 空状态 -->
+  <view wx:elif="{{!uploading}}" class="empty-tip">
+    <text>暂无返图，点击上方添加照片</text>
   </view>
+
 </view>

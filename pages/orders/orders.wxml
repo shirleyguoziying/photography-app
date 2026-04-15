@@ -12,7 +12,9 @@
     </view>
   </scroll-view>
 
-  <loading-skeleton wx:if="{{isLoading}}" type="order-list" count="3" />
+  <view wx:if="{{isLoading}}" class="empty-state">
+    <text class="empty-sub">加载中...</text>
+  </view>
 
   <view wx:elif="{{orders.length === 0}}" class="empty-state">
     <text class="empty-icon">📷</text>
@@ -22,11 +24,29 @@
   </view>
 
   <view wx:else class="order-list">
-    <order-card
+    <view
       wx:for="{{orders}}"
-      wx:key="orderId"
-      item="{{item}}"
-      bind:tap="onOrderTap"
-    />
+      wx:key="_id"
+      class="order-card"
+      bindtap="onOrderTap"
+      data-id="{{item._id}}"
+    >
+      <view class="card-header">
+        <text class="client-name">{{item.clientName}}</text>
+        <view class="status-badge status-{{item.status}}">{{item.statusLabel}}</view>
+      </view>
+      <view class="card-row">
+        <text class="card-label">日期</text>
+        <text class="card-value">{{item.preferredDate}} {{item.preferredTime}}</text>
+      </view>
+      <view class="card-row" wx:if="{{item.locationName}}">
+        <text class="card-label">地点</text>
+        <text class="card-value">{{item.locationName}}</text>
+      </view>
+      <view class="card-row" wx:if="{{item.characterName}}">
+        <text class="card-label">角色</text>
+        <text class="card-value accent">{{item.characterName}}</text>
+      </view>
+    </view>
   </view>
 </view>

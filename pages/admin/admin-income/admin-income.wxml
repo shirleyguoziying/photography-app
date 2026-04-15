@@ -1,0 +1,74 @@
+<view class="page">
+
+  <!-- 返回 -->
+  <view class="back-bar" bindtap="goBack">
+    <text class="back-icon">‹</text>
+    <text class="back-text">返回工作台</text>
+  </view>
+
+  <!-- 月份切换 -->
+  <view class="month-nav">
+    <view class="nav-btn" bindtap="prevMonth">‹</view>
+    <text class="month-label">{{monthLabel}}</text>
+    <view class="nav-btn" bindtap="nextMonth">›</view>
+  </view>
+
+  <!-- 本月总收入卡片 -->
+  <view class="total-card">
+    <text class="total-label">本月总收入</text>
+    <view class="total-amount-row">
+      <text class="total-unit">¥</text>
+      <text class="total-amount">{{currentTotal}}</text>
+    </view>
+    <text class="total-count">共 {{records.length}} 笔</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="center-tip"><text>加载中...</text></view>
+
+  <!-- 收入列表 -->
+  <view wx:elif="{{records.length > 0}}" class="record-list">
+    <view class="list-title">收入明细</view>
+    <view
+      wx:for="{{records}}"
+      wx:key="_id"
+      class="record-card"
+      hover-class="card-hover"
+      bindtap="goToDetail"
+      data-id="{{item._id}}"
+    >
+      <view class="record-left">
+        <text class="record-date">{{item.preferredDate}}</text>
+        <text class="record-char" wx:if="{{item.characterName}}">🎭 {{item.characterName}}</text>
+        <text class="record-location" wx:if="{{item.locationName}}">📍 {{item.locationName}}</text>
+        <text class="record-note" wx:if="{{item.incomeNote}}">{{item.incomeNote}}</text>
+      </view>
+      <view class="record-right">
+        <text class="record-amount">¥{{item.incomeAmount}}</text>
+        <text class="record-client">{{item.clientName}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading}}" class="center-tip"><text>本月暂无收入记录</text></view>
+
+  <!-- 柱状图 -->
+  <view class="chart-section" wx:if="{{chartMonths.length > 0}}">
+    <text class="chart-title">近6个月收入</text>
+    <view class="chart-wrap">
+      <view wx:for="{{chartMonths}}" wx:key="key" wx:for-item="m" class="chart-col">
+        <!-- 金额标签（有收入才显示） -->
+        <text class="chart-amount" wx:if="{{m.total > 0}}">{{m.total}}</text>
+        <!-- 柱子容器（固定高度，柱子底部对齐） -->
+        <view class="chart-bar-wrap">
+          <view
+            class="chart-bar {{m.isCurrentMonth ? 'chart-bar-active' : ''}}"
+            style="height:{{m.barHeight}}rpx;"
+          />
+        </view>
+        <text class="chart-month-label">{{m.label}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

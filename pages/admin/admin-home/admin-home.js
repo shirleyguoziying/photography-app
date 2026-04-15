@@ -1,55 +1,145 @@
-const orderService = require('../../../services/orderService')
 const { formatDate } = require('../../../utils/date')
-const { ORDER_STATUS } = require('../../../config/constants')
 
 Page({
   data: {
-    photographer: null,
     todayStr: formatDate(new Date(), 'MM月DD日'),
-    stats: { pendingCount: 0, todayCount: 0, deliveryCount: 0 },
-    todayOrders: [],
-    pendingOrders: [],
+    stats: { pendingCount: 0, todayCount: 0, monthlyIncome: 0 },
+    todayBookings: [],
+    pendingBookings: [],
+    loading: true,
+  },
+
+  onLoad() {
+    this._loadDashboard()
   },
 
   onShow() {
-    if (typeof this.getTabBar === 'function') {
-      this.getTabBar().setSelected('pages/admin/admin-home/admin-home')
+    const tabBar = this.getTabBar?.()
+    if (tabBar && typeof tabBar.setSelected === 'function') {
+      tabBar.setSelected('pages/admin/admin-home/admin-home')
     }
-    const app = getApp()
-    this.setData({ photographer: app.globalData.user })
-    this.loadDashboard()
+    this._loadDashboard()
   },
 
   onPullDownRefresh() {
-    this.loadDashboard().finally(() => wx.stopPullDownRefresh())
+    this._loadDashboard().finally(() => wx.stopPullDownRefresh())
   },
 
-  async loadDashboard() {
+  async _loadDashboard() {
+    this.setData({ loading: true })
+    const today = formatDate(new Date())
+
     try {
-      const today = formatDate(new Date())
-      const [pendingRes, todayRes, deliveryRes] = await Promise.all([
-        orderService.adminListOrders({ status: ORDER_STATUS.PENDING_CONFIRMATION, pageSize: 5 }),
-        orderService.adminListOrders({ date: today }),
-        orderService.adminListOrders({ status: ORDER_STATUS.POST_PROCESSING }),
-      ])
-      this.setData({
-        pendingOrders: pendingRes.list,
-        todayOrders: todayRes.list,
-        stats: {
-          pendingCount: pendingRes.total,
-          todayCount: todayRes.total,
-          deliveryCount: deliveryRes.total,
-        },
+      const res = await wx.cloud.callFunction({
+        name: 'getBookings',
+        data: {}
       })
-    } catch (e) {}
+      
+      if (res.result?.success) {
+        const allOrders = res.result.bookings || []
+        
+        const allPending = allOrders.filter(o => o.status === 'pending')
+        const allConfirmed = allOrders.filter(o => o.status === 'confirmed')
+        const todayBookings = allConfirmed.filter(b => b.preferredDate === today)
+        
+        const monthlyIncome = allOrders
+          .filter(o => o.status === 'completed' && o.income?.amount)
+          .reduce((sum, o) => sum + (o.income?.amount || 0), 0)
+
+        this.setData({
+          pendingBookings: allPending.slice(0, 5),
+          todayBookings,
+          stats: {
+            pendingCount: allPending.length,
+            todayCount: todayBookings.length,
+            monthlyIncome,
+          },
+        })
+      } else {
+        this._loadFromLocal()
+      }
+    } catch (e) {
+      console.error('云端读取失败:', e)
+      this._loadFromLocal()
+    } finally {
+      this.setData({ loading: false })
+    }
   },
 
-  onOrderTap(e) {
-    const { item } = e.detail
-    wx.navigateTo({ url: `/pages/admin/admin-order-detail/admin-order-detail?orderId=${item.orderId}` })
+  _loadFromLocal() {
+    const allOrders = wx.getStorageSync('photo_orders') || []
+    
+    const allPending = allOrders.filter(o => o.status === 'pending')
+    const allConfirmed = allOrders.filter(o => o.status === 'confirmed')
+    const todayBookings = allConfirmed.filter(b => b.preferredDate === formatDate(new Date()))
+    
+    const monthlyIncome = allOrders
+      .filter(o => o.status === 'completed' && o.income?.amount)
+      .reduce((sum, o) => sum + (o.income?.amount || 0), 0)
+
+    this.setData({
+      pendingBookings: allPending.slice(0, 5),
+      todayBookings,
+      stats: {
+        pendingCount: allPending.length,
+        todayCount: todayBookings.length,
+        monthlyIncome,
+      },
+    })
+  },
+
+  goToDetail(e) {
+    const { id } = e.currentTarget.dataset
+    wx.navigateTo({ url: `/pages/admin/admin-order-detail/admin-order-detail?bookingId=${id}` })
   },
 
   goToOrders() {
-    wx.switchTab({ url: '/pages/admin/admin-orders/admin-orders' })
+    wx.navigateTo({ url: '/pages/admin/admin-orders/admin-orders' })
+  },
+
+  goToCalendar() {
+    wx.navigateTo({ url: '/pages/admin/admin-calendar/admin-calendar' })
+  },
+
+  goToTodayBookings() {
+    wx.navigateTo({ url: '/pages/admin/admin-calendar/admin-calendar' })
+  },
+
+  goToIncome() {
+    wx.navigateTo({ url: '/pages/admin/admin-income/admin-income' })
+  },
+
+  goToProps() {
+    wx.navigateTo({ url: '/pages/admin/admin-props/admin-props' })
+  },
+
+  goToPortfolio() {
+    wx.navigateTo({ url: '/pages/admin/admin-portfolio/admin-portfolio' })
+  },
+
+  goToDelivery() {
+    wx.navigateTo({ url: '/pages/admin/admin-delivery/admin-delivery' })
+  },
+
+  async showMyOpenid() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'updateBookingStatus',
+        data: { bookingId: '_test_' },
+      })
+      const openid = res.result?.yourOpenid
+      if (openid) {
+        wx.setClipboardData({ data: openid })
+        wx.showModal({ title: '你的 openid（已复制）', content: openid, showCancel: false, confirmText: '知道了' })
+      } else {
+        wx.showToast({ title: 'openid 已配置', icon: 'none' })
+      }
+    } catch (e) {
+      wx.showToast({ title: '获取失败', icon: 'none' })
+    }
+  },
+
+  subscribePhotographerReminder() {
+    wx.showToast({ title: '订阅功能开发中', icon: 'none' })
   },
 })

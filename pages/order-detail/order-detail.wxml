@@ -1,36 +1,294 @@
 <view class="detail-page" wx:if="{{order}}">
-  <view class="status-header">
-    <status-badge status="{{order.status}}" />
-    <text class="order-id">订单号 {{order.orderId}}</text>
+  <!-- Status -->
+  <view class="section-card status-header">
+    <view class="status-badge status-{{order.status}}">{{order.statusLabel}}</view>
+    <text class="order-id">{{order._id}}</text>
   </view>
 
+  <!-- Shoot Info -->
   <view class="section-card">
     <view class="section-title">拍摄信息</view>
-    <view class="detail-row"><text class="dl">日期</text><text class="dr">{{order.shootDate}}</text></view>
-    <view class="detail-row"><text class="dl">时间</text><text class="dr">{{order.shootTime}}</text></view>
+    <view class="detail-row"><text class="dl">日期</text><text class="dr">{{order.preferredDate}}</text></view>
+    <view class="detail-row"><text class="dl">时间</text><text class="dr">{{order.preferredTime}}</text></view>
     <view class="detail-row"><text class="dl">时长</text><text class="dr">{{order.duration}}小时</text></view>
-    <view class="detail-row"><text class="dl">地点</text><text class="dr">{{order.location.name}}</text></view>
-    <view class="detail-row"><text class="dl">风格</text><text class="dr accent">{{order.styleTags.join(' · ')}}</text></view>
-  </view>
-
-  <!-- Photo Delivery Section -->
-  <view class="section-card" wx:if="{{canViewDelivery}}">
-    <view class="section-title">客片返图</view>
-    <view class="delivery-status">
-      <text class="delivery-count">共 {{delivery.totalCount}} 张</text>
-      <text class="delivery-hint">点击查看并挑选您喜欢的照片</text>
+    <view class="detail-row"><text class="dl">地点</text><text class="dr">{{order.locationName}}</text></view>
+    <view class="detail-row" wx:if="{{order.locationAddress}}">
+      <text class="dl">地址</text><text class="dr">{{order.locationAddress}}</text>
     </view>
-    <button class="btn btn-accent" bindtap="goToDelivery">查看客片</button>
+    <view class="detail-row"><text class="dl">人数</text><text class="dr">{{order.peopleCount}}人</text></view>
+    <view class="detail-row" wx:if="{{order.locationNotes}}">
+      <text class="dl">补充说明</text><text class="dr">{{order.locationNotes}}</text>
+    </view>
   </view>
 
-  <view class="section-card delivery-pending" wx:elif="{{order.status === 'post_processing'}}">
-    <text class="pending-icon">⏳</text>
-    <text class="pending-title">后期处理中</text>
-    <text class="pending-sub">照片预计 3-5 个工作日内发送</text>
+  <!-- Character & Props -->
+  <view class="section-card">
+    <view class="section-title">角色 & 道具</view>
+    <view class="detail-row">
+      <text class="dl">角色</text>
+      <text class="dr accent">{{order.characterName || '未填写'}}</text>
+    </view>
+
+    <!-- Reference Images -->
+    <view wx:if="{{order.referenceImages.length > 0}}" style="margin-top:16rpx;">
+      <text class="sub-label">参考图</text>
+      <scroll-view scroll-x class="ref-scroll">
+        <image
+          wx:for="{{order.referenceImages}}"
+          wx:key="*this"
+          src="{{item}}"
+          class="ref-img"
+          mode="aspectFill"
+        />
+      </scroll-view>
+    </view>
+
+    <!-- Props Notes -->
+    <view wx:if="{{order.props.notes}}" style="margin-top:16rpx;">
+      <text class="sub-label">道具备注</text>
+      <text class="dr">{{order.props.notes}}</text>
+    </view>
   </view>
 
-  <!-- Cancel Button -->
-  <view class="cancel-section" wx:if="{{canCancel}}">
-    <button class="btn btn-outline-danger" bindtap="cancelOrder">取消订单</button>
+  <!-- Style Preferences -->
+  <view class="section-card">
+    <view class="section-title">风格偏好</view>
+    <view class="detail-row" wx:if="{{order.shootPrefLabel}}">
+      <text class="dl">拍摄偏好</text>
+      <text class="dr">{{order.shootPrefLabel}}</text>
+    </view>
+    <view class="detail-row">
+      <text class="dl">整体色调</text>
+      <view class="color-preview-row">
+        <view class="color-swatch" style="background:{{order.colorHex}}"></view>
+        <text class="dr">{{order.colorHex}}  (R{{order.colorR}} G{{order.colorG}} B{{order.colorB}})</text>
+      </view>
+    </view>
+    <view class="detail-row" wx:if="{{order.specialRequests}}">
+      <text class="dl">特别说明</text>
+      <text class="dr">{{order.specialRequests}}</text>
+    </view>
   </view>
+
+  <!-- Action Buttons -->
+  <view class="action-section">
+    <button 
+      wx:if="{{canEdit}}" 
+      class="btn btn-outline" 
+      bindtap="editOrder"
+    >修改预约</button>
+    <button 
+      wx:if="{{canCancel}}" 
+      class="btn btn-outline-danger" 
+      bindtap="cancelOrder"
+    >取消预约</button>
+  </view>
+</view>
+
+<!-- Edit Modal -->
+<view wx:if="{{showEditModal}}" class="modal-overlay" catchtap="onEditModalClose">
+  <scroll-view class="modal-content" scroll-y catchtap="">
+    <view class="modal-header">
+      <text class="modal-title">修改预约</text>
+      <text class="modal-close" bindtap="onEditModalClose">✕</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- Date & Time -->
+      <view class="edit-section">
+        <text class="edit-section-title">时间信息</text>
+        
+        <view class="field-group">
+          <text class="field-label">拍摄日期</text>
+          <picker 
+            mode="date" 
+            value="{{editData.preferredDate}}"
+            bindchange="onEditDateChange"
+          >
+            <view class="picker-input">{{editData.preferredDate || '请选择'}}</view>
+          </picker>
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">拍摄时间</text>
+          <view class="time-grid">
+            <view 
+              wx:for="{{timeSlots}}"
+              wx:key="*this"
+              class="time-slot {{editData.preferredTime === item ? 'active' : ''}}"
+              bindtap="onEditTimeSelect"
+              data-time="{{item}}"
+            >{{item}}</view>
+          </view>
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">拍摄时长</text>
+          <view class="duration-options">
+            <view 
+              wx:for="{{durationOptions}}"
+              wx:key="value"
+              class="duration-option {{editData.duration === item.value ? 'active' : ''}}"
+              bindtap="onEditDurationSelect"
+              data-value="{{item.value}}"
+            >{{item.label}}</view>
+          </view>
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">拍摄人数</text>
+          <view class="people-counter">
+            <view class="counter-btn" bindtap="onEditPeopleDec">-</view>
+            <text class="counter-value">{{editData.peopleCount}}人</text>
+            <view class="counter-btn" bindtap="onEditPeopleInc">+</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- Location -->
+      <view class="edit-section">
+        <text class="edit-section-title">地点信息</text>
+        
+        <view class="field-group">
+          <text class="field-label">地点名称</text>
+          <input 
+            class="text-input"
+            placeholder="请输入地点名称"
+            value="{{editData.locationName}}"
+            bindinput="onEditLocationNameInput"
+          />
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">详细地址</text>
+          <input 
+            class="text-input"
+            placeholder="请输入详细地址"
+            value="{{editData.locationAddress}}"
+            bindinput="onEditLocationAddressInput"
+          />
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">补充说明</text>
+          <textarea 
+            class="textarea-input"
+            placeholder="补充说明..."
+            value="{{editData.locationNotes}}"
+            bindinput="onEditLocationNotesInput"
+          />
+        </view>
+      </view>
+      
+      <!-- Character -->
+      <view class="edit-section">
+        <text class="edit-section-title">角色信息</text>
+        
+        <view class="field-group">
+          <text class="field-label">角色名</text>
+          <input 
+            class="text-input"
+            placeholder="请输入角色名"
+            value="{{editData.characterName}}"
+            bindinput="onEditCharacterNameInput"
+          />
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">道具备注</text>
+          <textarea 
+            class="textarea-input"
+            placeholder="道具备注..."
+            value="{{editData.propsNotes}}"
+            bindinput="onEditPropsNotesInput"
+          />
+        </view>
+      </view>
+      
+      <!-- Style -->
+      <view class="edit-section">
+        <text class="edit-section-title">风格偏好</text>
+        
+        <view class="field-group">
+          <text class="field-label">拍摄偏好</text>
+          <view class="preference-grid">
+            <view 
+              wx:for="{{shootPreferences}}"
+              wx:key="value"
+              class="pref-item {{editData.shootPreference === item.value ? 'active' : ''}}"
+              bindtap="onEditShootPreferenceSelect"
+              data-value="{{item.value}}"
+            >
+              <text class="pref-icon">{{item.icon}}</text>
+              <text class="pref-title">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">整体色调</text>
+          <view class="color-picker-section">
+            <view class="color-preview-large" style="background: rgb({{editData.colorR}}, {{editData.colorG}}, {{editData.colorB}})"></view>
+            <view class="color-sliders">
+              <view class="slider-row">
+                <text class="slider-label">R</text>
+                <slider 
+                  class="color-slider" 
+                  min="0" 
+                  max="255" 
+                  value="{{editData.colorR}}"
+                  activeColor="#ff4d4f"
+                  bindchanging="onEditColorRChange"
+                />
+                <text class="slider-value">{{editData.colorR}}</text>
+              </view>
+              <view class="slider-row">
+                <text class="slider-label">G</text>
+                <slider 
+                  class="color-slider" 
+                  min="0" 
+                  max="255" 
+                  value="{{editData.colorG}}"
+                  activeColor="#52c41a"
+                  bindchanging="onEditColorGChange"
+                />
+                <text class="slider-value">{{editData.colorG}}</text>
+              </view>
+              <view class="slider-row">
+                <text class="slider-label">B</text>
+                <slider 
+                  class="color-slider" 
+                  min="0" 
+                  max="255" 
+                  value="{{editData.colorB}}"
+                  activeColor="#1890ff"
+                  bindchanging="onEditColorBChange"
+                />
+                <text class="slider-value">{{editData.colorB}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <view class="field-group">
+          <text class="field-label">特别说明</text>
+          <textarea 
+            class="textarea-input"
+            placeholder="特别说明..."
+            value="{{editData.specialRequests}}"
+            bindinput="onEditSpecialRequestsInput"
+          />
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn btn-outline" bindtap="onEditModalClose">取消</button>
+      <button class="btn btn-primary" bindtap="saveEdit">保存</button>
+    </view>
+  </scroll-view>
+</view>
+
+<view wx:else class="empty-state">
+  <text class="empty-sub">加载中...</text>
 </view>

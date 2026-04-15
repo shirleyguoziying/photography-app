@@ -17,14 +17,20 @@ function validateStep1(data) {
 }
 
 function validateStep2(data) {
-  // Props step is optional — no required fields
-  return []
+  const errors = []
+  if (!data.props || !data.props.characterName || !data.props.characterName.trim()) {
+    errors.push('请填写出演角色名')
+  }
+  if (!data.props || !data.props.referenceImages || data.props.referenceImages.length === 0) {
+    errors.push('请至少上传一张角色参考图')
+  }
+  return errors
 }
 
 function validateStep3(data) {
   const errors = []
-  if (!data.stylePreferences || data.stylePreferences.tags.length === 0) {
-    errors.push('请至少选择一个风格标签')
+  if (!data.stylePreferences || !data.stylePreferences.shootPreference) {
+    errors.push('请选择拍摄偏好')
   }
   return errors
 }

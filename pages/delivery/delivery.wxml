@@ -21,6 +21,7 @@
       data-photo="{{item}}"
     >
       <image class="photo-thumb" src="{{item.thumbnailUrl}}" mode="aspectFill" lazy-load />
+      <view class="star-overlay" wx:if="{{item.isHighlight}}">⭐</view>
       <view class="select-overlay" wx:if="{{delivery.status === 'client_selecting'}}">
         <view class="select-check {{item.isSelected ? 'checked' : ''}}">
           <text wx:if="{{item.isSelected}}">✓</text>

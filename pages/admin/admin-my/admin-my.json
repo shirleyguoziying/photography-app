@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "摄影师管理",
+  "usingComponents": {
+    "custom-tab-bar": "../../../custom-tab-bar/index"
+  }
+}

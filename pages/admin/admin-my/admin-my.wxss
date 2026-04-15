@@ -1,0 +1,42 @@
+.admin-my-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding-bottom: 120rpx;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: linear-gradient(135deg, #ffd4e5 0%, #ffb6c1 100%);
+  padding: 48rpx 32rpx;
+}
+
+.user-info { display: flex; flex-direction: column; gap: 8rpx; }
+.user-name { font-size: 34rpx; font-weight: 700; color: #5a3f4a; }
+.user-role { font-size: 24rpx; color: #8b6b7a; }
+
+.menu-group {
+  background: #ffffff;
+  border-radius: 24rpx;
+  margin: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(255,182,193,0.15);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 32rpx 28rpx;
+  border-bottom: 1rpx solid #f8f0f3;
+}
+
+.menu-item:last-child { border-bottom: none; }
+
+.menu-icon { font-size: 40rpx; }
+.menu-label { flex: 1; font-size: 30rpx; color: #5a5a5a; }
+.menu-arrow { font-size: 36rpx; color: #ffd4e5; }
+
+.logout-section { padding: 24rpx; }
+.logout-btn { width: 100%; color: #ff8fab; border-color: #ff8fab; }

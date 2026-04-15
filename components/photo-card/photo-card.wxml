@@ -7,4 +7,7 @@
     <text class="photo-title" wx:if="{{item.title}}">{{item.title}}</text>
   </view>
   <view class="featured-badge" wx:if="{{item.isFeatured && showBadge}}">精选</view>
+  <view class="star-icon {{item.isFeatured ? 'active' : ''}}" wx:if="{{showBadge}}" catchtap="onStarTap" data-item="{{item}}">
+    {{item.isFeatured ? '★' : '☆'}}
+  </view>
 </view>

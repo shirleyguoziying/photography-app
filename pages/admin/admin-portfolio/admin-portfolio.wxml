@@ -15,14 +15,8 @@
       wx:key="portfolioItemId"
       class="photo-item"
     >
-      <photo-card item="{{item}}" size="small" showBadge bind:tap="onPhotoTap" />
+      <photo-card item="{{item}}" size="small" showBadge bind:tap="onPhotoTap" bind:startap="toggleFeatured" />
       <view class="item-actions">
-        <view
-          class="action-chip {{item.isFeatured ? 'featured' : ''}}"
-          bindtap="toggleFeatured"
-          data-item-id="{{item.portfolioItemId}}"
-          data-featured="{{item.isFeatured}}"
-        >{{item.isFeatured ? '★ 精选' : '☆ 设为精选'}}</view>
         <view class="action-chip delete" bindtap="deleteItem" data-item-id="{{item.portfolioItemId}}">删除</view>
       </view>
     </view>

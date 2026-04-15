@@ -2,6 +2,7 @@ const KEYS = {
   TOKEN: 'photo_token',
   USER: 'photo_user',
   BOOKING_DRAFT: 'photo_booking_draft',
+  ORDERS: 'photo_orders',
 }
 
 const getToken = () => wx.getStorageSync(KEYS.TOKEN) || null
@@ -20,6 +21,19 @@ const getBookingDraft = () => wx.getStorageSync(KEYS.BOOKING_DRAFT) || null
 const setBookingDraft = (draft) => wx.setStorageSync(KEYS.BOOKING_DRAFT, draft)
 const clearBookingDraft = () => wx.removeStorageSync(KEYS.BOOKING_DRAFT)
 
+// Orders storage for development
+const getOrders = () => wx.getStorageSync(KEYS.ORDERS) || []
+const setOrders = (orders) => wx.setStorageSync(KEYS.ORDERS, orders)
+const addOrder = (order) => {
+  const orders = getOrders()
+  orders.unshift(order)
+  setOrders(orders)
+}
+const getOrder = (orderId) => {
+  const orders = getOrders()
+  return orders.find(o => o._id === orderId)
+}
+
 module.exports = {
   getToken,
   setToken,
@@ -29,4 +43,8 @@ module.exports = {
   getBookingDraft,
   setBookingDraft,
   clearBookingDraft,
+  getOrders,
+  setOrders,
+  addOrder,
+  getOrder,
 }

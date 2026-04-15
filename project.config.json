@@ -42,7 +42,7 @@
   },
   "cloudfunctionRoot": "cloudfunctions/",
   "compileType": "miniprogram",
-  "libVersion": "3.4.8",
+  "libVersion": "3.15.1",
   "appid": "wx2c96e4e743abc144",
   "projectname": "photography-booking",
   "isGameTourist": false,

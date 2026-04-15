@@ -18,19 +18,27 @@
   align-items: center;
   justify-content: center;
   gap: 4rpx;
+  transition: all 0.3s;
 }
 
 .tab-icon {
-  width: 48rpx;
-  height: 48rpx;
+  font-size: 40rpx;
+  opacity: 0.6;
+  transition: all 0.3s;
 }
 
 .tab-label {
   font-size: 20rpx;
   color: #999999;
+  transition: all 0.3s;
+}
+
+.tab-item.active .tab-icon {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .tab-item.active .tab-label {
-  color: #1a1a1a;
+  color: #c8a97e;
   font-weight: 600;
 }

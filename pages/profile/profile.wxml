@@ -35,6 +35,7 @@
   </view>
 
   <view class="logout-section">
+    <button class="btn btn-outline dev-btn" bindtap="toggleRole">切换为摄影师</button>
     <button class="btn btn-outline logout-btn" bindtap="logout">退出登录</button>
   </view>
 </view>

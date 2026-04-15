@@ -1,0 +1,155 @@
+.page { min-height: 100vh; background: #f5f5f5; padding-bottom: 60rpx; }
+
+/* 顶部标题栏 */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 32rpx 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.page-title { font-size: 34rpx; font-weight: 700; color: #1a1a1a; }
+
+.add-btn {
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 12rpx 28rpx;
+  border-radius: 9999rpx;
+}
+
+/* 提示 */
+.center-tip { text-align: center; color: #999; font-size: 28rpx; padding: 80rpx 0; }
+
+/* 道具列表 */
+.props-list { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+
+.prop-item {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+}
+
+.prop-img { width: 120rpx; height: 120rpx; border-radius: 12rpx; flex-shrink: 0; }
+
+.prop-info { flex: 1; display: flex; flex-direction: column; gap: 8rpx; }
+.prop-name { font-size: 30rpx; font-weight: 600; color: #1a1a1a; }
+.prop-desc { font-size: 24rpx; color: #999; }
+
+.prop-actions { display: flex; flex-direction: column; gap: 12rpx; }
+
+.action-btn {
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 8rpx 20rpx;
+  border-radius: 9999rpx;
+  text-align: center;
+}
+
+.edit-btn { background: #f0f0f0; color: #333; }
+.del-btn { background: #fee2e2; color: #ef4444; }
+
+/* 遮罩 */
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+}
+
+/* 表单弹层 */
+.form-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 32rpx env(safe-area-inset-bottom);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-title { font-size: 32rpx; font-weight: 700; color: #1a1a1a; }
+.close-btn { font-size: 36rpx; color: #999; padding: 8rpx; }
+
+/* 图片上传区 */
+.form-image-area {
+  width: 100%;
+  height: 280rpx;
+  border-radius: 20rpx;
+  border: 2rpx dashed #d0d0d0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.form-image-preview { width: 100%; height: 100%; }
+
+.form-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.placeholder-icon { font-size: 64rpx; }
+.placeholder-text { font-size: 26rpx; color: #999; }
+
+.uploading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+/* 表单字段 */
+.form-field { display: flex; flex-direction: column; gap: 12rpx; }
+.form-label { font-size: 26rpx; font-weight: 600; color: #1a1a1a; }
+
+.form-input {
+  height: 88rpx;
+  border: 2rpx solid #e8e8e8;
+  border-radius: 14rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #1a1a1a;
+  background: #f8f8f8;
+}
+
+/* 保存按钮 */
+.save-btn {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 20rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.save-btn.saving { opacity: 0.6; }
+.save-btn-hover { opacity: 0.65; }

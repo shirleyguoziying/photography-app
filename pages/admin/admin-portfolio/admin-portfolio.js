@@ -8,19 +8,21 @@ Page({
   },
 
   onShow() {
-    if (typeof this.getTabBar === 'function') {
-      this.getTabBar().setSelected('pages/admin/admin-portfolio/admin-portfolio')
+    const tabBar = this.getTabBar?.()
+    if (tabBar && typeof tabBar.setSelected === 'function') {
+      tabBar.setSelected('pages/admin/admin-portfolio/admin-portfolio')
     }
     this.loadPortfolio()
   },
 
   async loadPortfolio() {
     try {
-      const app = getApp()
-      const { list } = await portfolioService.getPhotographerPortfolio(app.globalData.user.photographerId)
+      const { list } = await portfolioService.getPhotographerPortfolio()
       this.setData({ portfolio: list })
       this._filterList()
-    } catch (e) {}
+    } catch (e) {
+      console.error('加载作品失败:', e)
+    }
   },
 
   _filterList() {
@@ -42,11 +44,14 @@ Page({
   },
 
   async toggleFeatured(e) {
-    const { itemId, featured } = e.currentTarget.dataset
+    const item = e.detail?.item || e.currentTarget.dataset
+    const itemId = item.portfolioItemId || item._id
+    const featured = item.isFeatured || false
+    
     try {
       await portfolioService.adminUpdateItem(itemId, { isFeatured: !featured })
       const portfolio = this.data.portfolio.map(p =>
-        p.portfolioItemId === itemId ? { ...p, isFeatured: !featured } : p
+        (p.portfolioItemId === itemId || p._id === itemId) ? { ...p, isFeatured: !featured } : p
       )
       this.setData({ portfolio })
       this._filterList()

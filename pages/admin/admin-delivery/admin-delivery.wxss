@@ -1,57 +1,86 @@
-.delivery-page { min-height: 100vh; background: #f5f5f5; padding: 24rpx; padding-bottom: 180rpx; }
+.page { min-height: 100vh; background: #f5f5f5; padding-bottom: 60rpx; }
 
-.upload-zone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 16rpx;
-  border: 3rpx dashed #e8e8e8;
-  padding: 80rpx 40rpx;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
+.back-bar {
+  display: flex; align-items: center; gap: 4rpx;
+  padding: 14rpx 24rpx; background: #fff; border-bottom: 1rpx solid #f0f0f0;
+}
+.back-icon { font-size: 44rpx; color: #1a1a1a; line-height: 1; margin-top: -2rpx; }
+.back-text  { font-size: 28rpx; color: #1a1a1a; }
+
+/* 订单信息栏 */
+.booking-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.booking-meta { display: flex; align-items: center; gap: 12rpx; flex-wrap: wrap; }
+.booking-date  { font-size: 26rpx; font-weight: 700; color: #1a1a1a; }
+.booking-client { font-size: 24rpx; color: #555; }
+.booking-char   { font-size: 22rpx; color: #7c3aed; }
+
+.count-pills { display: flex; gap: 8rpx; }
+.pill { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 9999rpx; }
+.pill-total { background: #f0f0f0; color: #555; }
+.pill-star  { background: #fef9c3; color: #92400e; }
+
+/* 上传行 */
+.upload-row {
+  padding: 20rpx 24rpx;
+  display: flex; flex-direction: column; gap: 12rpx;
+}
+.upload-btn {
+  display: flex; align-items: center; gap: 12rpx;
+  background: #1a1a1a; border-radius: 16rpx;
+  padding: 24rpx 32rpx;
+  active-opacity: 0.75;
+}
+.upload-btn.uploading { background: #555; }
+.upload-icon { font-size: 36rpx; color: #fff; font-weight: 300; }
+.upload-label { font-size: 28rpx; font-weight: 600; color: #fff; }
+.upload-hint { font-size: 22rpx; color: #999; }
+
+/* 照片网格 — 3列 */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rpx;
+  padding: 0 4rpx;
 }
 
-.upload-icon { font-size: 80rpx; }
-.upload-title { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
-.upload-hint { font-size: 24rpx; color: #999999; }
-
-.progress-bar {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 24rpx;
+.photo-cell {
+  position: relative;
+  aspect-ratio: 1;
 }
 
-.progress-fill {
-  height: 8rpx;
-  background: #c8a97e;
-  border-radius: 4rpx;
-  transition: width 0.3s;
-  margin-bottom: 12rpx;
+.photo-img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.progress-text { font-size: 24rpx; color: #666666; }
-
-.uploaded-grid { background: #fff; border-radius: 16rpx; padding: 24rpx; }
-.grid-header { margin-bottom: 20rpx; }
-.grid-count { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
-
-.photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8rpx; }
-.photo-thumb-wrap { aspect-ratio: 1; border-radius: 8rpx; overflow: hidden; }
-.photo-thumb { width: 100%; height: 100%; }
-
-.bottom-actions {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  gap: 16rpx;
-  padding: 24rpx;
-  background: #fff;
-  border-top: 1rpx solid #f0f0f0;
+/* 优质标记按钮 */
+.star-btn {
+  position: absolute;
+  bottom: 6rpx; left: 6rpx;
+  width: 48rpx; height: 48rpx;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26rpx;
 }
+.star-off { background: rgba(0,0,0,0.4); }
+.star-on  { background: rgba(245,158,11,0.9); }
 
-.bottom-actions .btn { flex: 1; }
+/* 删除按钮 */
+.del-btn {
+  position: absolute;
+  top: 6rpx; right: 6rpx;
+  width: 44rpx; height: 44rpx;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.del-icon { font-size: 22rpx; color: #fff; }
+
+.empty-tip {
+  text-align: center; color: #bbb; font-size: 28rpx; padding: 100rpx 0;
+}

@@ -33,8 +33,17 @@ const ORDER_STATUS_COLOR = {
 const BOOKING_STEPS = [
   { index: 0, label: '时间', icon: 'calendar' },
   { index: 1, label: '地点', icon: 'location' },
-  { index: 2, label: '道具', icon: 'star' },
-  { index: 3, label: '风格', icon: 'palette' },
+  { index: 2, label: '角色&道具', icon: 'star' },
+  { index: 3, label: '偏好', icon: 'palette' },
+]
+
+// COS 拍摄偏好选项（单选）
+const SHOOT_PREFERENCES = [
+  { value: 'closeup',    title: '大头为主',    desc: '喜欢大头！妆和假发不能白费！' },
+  { value: 'halfbody',   title: '半身为主',    desc: '大概拍到腰，可展示美妙cos服、手部动作' },
+  { value: 'wideshot',   title: '大景为主',    desc: '外景不能白去、棚子不能白租！' },
+  { value: 'atmosphere', title: '氛围感爱好者', desc: '背影、不露脸，用打光塑造氛围感' },
+  { value: 'mixed',      title: '混合模式',    desc: '都来点，交给小锅发挥' },
 ]
 
 // Photography style tags
@@ -95,6 +104,7 @@ module.exports = {
   ORDER_STATUS_LABEL,
   ORDER_STATUS_COLOR,
   BOOKING_STEPS,
+  SHOOT_PREFERENCES,
   STYLE_TAGS,
   DURATION_OPTIONS,
   PROPS_OPTIONS,

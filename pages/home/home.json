@@ -5,6 +5,6 @@
   "usingComponents": {
     "photo-card": "../../components/photo-card/photo-card",
     "loading-skeleton": "../../components/loading-skeleton/loading-skeleton",
-    "custom-tab-bar": "../../components/custom-tab-bar/index"
+    "custom-tab-bar": "../../custom-tab-bar/index"
   }
 }

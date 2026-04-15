@@ -1,9 +1,11 @@
-<view class="confirm-page">
+<view class="confirm-page" wx:if="{{booking}}">
   <view class="summary-header">
     <text class="summary-title">请确认预约信息</text>
   </view>
 
+  <!-- 时间信息 -->
   <view class="section-card">
+    <view class="section-title">拍摄时间</view>
     <view class="confirm-row">
       <text class="label">拍摄日期</text>
       <text class="value">{{booking.preferredDate}}</text>
@@ -14,39 +16,76 @@
     </view>
     <view class="confirm-row">
       <text class="label">拍摄时长</text>
-      <text class="value">{{booking.duration}}小时</text>
+      <text class="value">{{booking.duration}} 小时</text>
     </view>
   </view>
 
+  <!-- 地点 & 人数 -->
   <view class="section-card">
+    <view class="section-title">地点 & 人数</view>
     <view class="confirm-row">
       <text class="label">拍摄地点</text>
       <view class="value-col">
-        <text class="value">{{booking.location.name}}</text>
-        <text class="value-sub">{{booking.location.address}}</text>
+        <text class="value">{{booking.location.name || '未填写'}}</text>
+        <text class="value-sub" wx:if="{{booking.location.address}}">{{booking.location.address}}</text>
+      </view>
+    </view>
+    <view class="confirm-row">
+      <text class="label">拍摄人数</text>
+      <text class="value">{{booking.peopleCount || 1}} 人</text>
+    </view>
+  </view>
+
+  <!-- 角色信息 -->
+  <view class="section-card">
+    <view class="section-title">角色信息</view>
+    <view class="confirm-row">
+      <text class="label">出演角色</text>
+      <text class="value accent">{{booking.props.characterName}}</text>
+    </view>
+    <view class="confirm-col" wx:if="{{booking.props.referenceImages.length > 0}}">
+      <text class="label">角色参考图</text>
+      <view class="thumb-grid">
+        <image
+          wx:for="{{booking.props.referenceImages}}"
+          wx:key="*this"
+          class="thumb"
+          src="{{item}}"
+          mode="aspectFill"
+        />
       </view>
     </view>
   </view>
 
-  <view class="section-card">
-    <view class="confirm-row">
-      <text class="label">服装套数</text>
-      <text class="value">{{booking.props.hasOwnOutfit ? booking.props.outfitCount + '套' : '不带服装'}}</text>
-    </view>
-    <view class="confirm-row" wx:if="{{booking.props.propItems.length > 0}}">
-      <text class="label">拍摄道具</text>
-      <text class="value">{{booking.props.propItems.join('、')}}</text>
+  <!-- 道具 -->
+  <view class="section-card" wx:if="{{selectedProps.length > 0}}">
+    <view class="section-title">拍摄道具</view>
+    <view class="prop-row">
+      <view wx:for="{{selectedProps}}" wx:key="_id" class="prop-chip">
+        <text class="prop-chip-name">{{item.name}}</text>
+      </view>
     </view>
   </view>
 
+  <!-- 拍摄偏好 & 色调 -->
   <view class="section-card">
+    <view class="section-title">偏好 & 色调</view>
     <view class="confirm-row">
-      <text class="label">风格标签</text>
-      <text class="value accent">{{booking.stylePreferences.tags.join(' · ')}}</text>
+      <text class="label">拍摄偏好</text>
+      <text class="value accent">{{shootPrefLabel || '未选择'}}</text>
     </view>
-    <view class="confirm-row" wx:if="{{booking.stylePreferences.mood}}">
-      <text class="label">色调氛围</text>
-      <text class="value">{{booking.stylePreferences.mood}}</text>
+    <view class="confirm-row">
+      <text class="label">整体色调</text>
+      <view class="color-display">
+        <view
+          class="color-swatch"
+          style="background: rgb({{booking.stylePreferences.colorR}},{{booking.stylePreferences.colorG}},{{booking.stylePreferences.colorB}})"
+        />
+        <text class="color-hex">{{colorHex}}</text>
+        <text class="color-rgb">
+          RGB({{booking.stylePreferences.colorR}}, {{booking.stylePreferences.colorG}}, {{booking.stylePreferences.colorB}})
+        </text>
+      </view>
     </view>
     <view class="confirm-row" wx:if="{{booking.stylePreferences.specialRequests}}">
       <text class="label">特别说明</text>
@@ -54,17 +93,24 @@
     </view>
   </view>
 
+  <!-- AI 策划入口 -->
   <view class="ai-planning-teaser" bindtap="goToAiPlanning">
     <view class="ai-icon">✨</view>
     <view class="ai-text">
       <text class="ai-title">AI 生成拍摄策划</text>
-      <text class="ai-sub">根据您的选择自动生成场景规划和时间轴</text>
+      <text class="ai-sub">根据您的角色和偏好自动生成场景规划</text>
     </view>
     <text class="arrow">›</text>
   </view>
 
+  <!-- 底部操作 -->
   <view class="bottom-actions safe-bottom">
-    <button class="btn btn-outline" bindtap="goBack">修改</button>
-    <button class="btn btn-accent" bindtap="submitBooking" loading="{{isSubmitting}}">确认预约</button>
+    <button class="btn btn-outline" hover-class="btn-hover-outline" bindtap="goBack">修改</button>
+    <button class="btn btn-primary" hover-class="btn-hover-primary" bindtap="submitBooking" loading="{{isSubmitting}}">确认预约</button>
   </view>
+</view>
+
+<!-- 加载中占位 -->
+<view wx:else class="loading-placeholder">
+  <text>加载中...</text>
 </view>

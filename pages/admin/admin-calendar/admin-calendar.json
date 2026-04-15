@@ -1,4 +1,4 @@
 {
   "navigationBarTitleText": "拍摄日历",
-  "usingComponents": { "custom-tab-bar": "../../../components/custom-tab-bar/index" }
+  "usingComponents": { "custom-tab-bar": "../../../custom-tab-bar/index" }
 }

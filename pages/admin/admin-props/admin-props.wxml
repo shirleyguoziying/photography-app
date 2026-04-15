@@ -1,0 +1,89 @@
+<view class="page">
+  <view class="page-header">
+    <text class="page-title">道具管理</text>
+    <view class="add-btn" bindtap="openAddForm">＋ 添加道具</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="center-tip">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 道具列表 -->
+  <view wx:elif="{{props.length === 0}}" class="center-tip">
+    <text>还没有道具，点击右上角添加</text>
+  </view>
+
+  <view wx:else class="props-list">
+    <view wx:for="{{props}}" wx:key="_id" class="prop-item">
+      <image class="prop-img" src="{{item.image}}" mode="aspectFill" />
+      <view class="prop-info">
+        <text class="prop-name">{{item.name}}</text>
+        <text class="prop-desc" wx:if="{{item.description}}">{{item.description}}</text>
+      </view>
+      <view class="prop-actions">
+        <view class="action-btn edit-btn" bindtap="openEditForm" data-prop="{{item}}">编辑</view>
+        <view class="action-btn del-btn" bindtap="deleteProp" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 新增/编辑表单遮罩 -->
+<view wx:if="{{showForm}}" class="mask" bindtap="closeForm" />
+
+<!-- 表单弹出层 -->
+<view wx:if="{{showForm}}" class="form-sheet">
+  <view class="form-header">
+    <text class="form-title">{{editingId ? '编辑道具' : '添加道具'}}</text>
+    <view class="close-btn" bindtap="closeForm">✕</view>
+  </view>
+
+  <!-- 图片上传 -->
+  <view class="form-image-area" bindtap="choosePropImage">
+    <image
+      wx:if="{{form.imageLocal || form.image}}"
+      class="form-image-preview"
+      src="{{form.imageLocal || form.image}}"
+      mode="aspectFill"
+    />
+    <view wx:else class="form-image-placeholder">
+      <text class="placeholder-icon">📷</text>
+      <text class="placeholder-text">点击上传道具图片</text>
+    </view>
+    <view wx:if="{{uploading}}" class="uploading-overlay">
+      <text>上传中...</text>
+    </view>
+  </view>
+
+  <!-- 道具名称 -->
+  <view class="form-field">
+    <text class="form-label">道具名称 *</text>
+    <input
+      class="form-input"
+      placeholder="如：花束、气球、胶片相机..."
+      value="{{form.name}}"
+      bindinput="onNameInput"
+      maxlength="20"
+    />
+  </view>
+
+  <!-- 描述 -->
+  <view class="form-field">
+    <text class="form-label">简短描述（可选）</text>
+    <input
+      class="form-input"
+      placeholder="如：多种颜色可选，营造浪漫氛围"
+      value="{{form.description}}"
+      bindinput="onDescInput"
+      maxlength="40"
+    />
+  </view>
+
+  <button
+    class="save-btn {{saving ? 'saving' : ''}}"
+    hover-class="save-btn-hover"
+    bindtap="saveProp"
+    loading="{{saving}}"
+  >保存</button>
+</view>

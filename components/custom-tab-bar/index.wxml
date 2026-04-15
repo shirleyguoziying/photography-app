@@ -6,7 +6,7 @@
     bindtap="switchTab"
     data-path="{{item.path}}"
   >
-    <image class="tab-icon" src="{{selected === item.path ? item.activeIcon : item.icon}}" mode="aspectFit" />
+    <text class="tab-icon">{{selected === item.path ? item.activeIcon : item.icon}}</text>
     <text class="tab-label">{{item.label}}</text>
   </view>
 </view>

@@ -3,6 +3,6 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "order-card": "../../../components/order-card/order-card",
-    "custom-tab-bar": "../../../components/custom-tab-bar/index"
+    "custom-tab-bar": "../../../custom-tab-bar/index"
   }
 }

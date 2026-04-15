@@ -1,0 +1,34 @@
+<view class="gallery-page">
+  <view class="page-header">
+    <text class="page-title">更多例图</text>
+    <text class="page-sub">精选客片展示</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{previewPhotos.length === 0}}" class="empty-tip">
+    <text>暂无例图</text>
+  </view>
+
+  <view wx:else class="photo-grid">
+    <view 
+      wx:for="{{previewPhotos}}"
+      wx:key="id"
+      class="photo-item"
+      bindtap="previewPhoto"
+      data-url="{{item.url}}"
+    >
+      <image 
+        class="photo-img" 
+        src="{{item.url}}" 
+        mode="aspectFill"
+        lazy-load
+      />
+      <view class="photo-overlay">
+        <text class="photo-role">{{item.role}}</text>
+      </view>
+    </view>
+  </view>
+</view>

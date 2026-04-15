@@ -1,50 +1,122 @@
 <view class="admin-home">
-  <!-- Greeting -->
+  <!-- 顶部栏 -->
   <view class="greeting-bar">
-    <text class="greeting-text">你好，{{photographer.displayName}} 👋</text>
-    <text class="greeting-date">{{todayStr}}</text>
+    <view>
+      <text class="greeting-text">工作台</text>
+      <text class="greeting-date">{{todayStr}}</text>
+    </view>
+    <view class="header-actions">
+      <view class="subscribe-btn" bindtap="subscribePhotographerReminder">🔔 订阅提醒</view>
+    </view>
   </view>
 
-  <!-- Stats Row -->
+  <!-- 统计 -->
   <view class="stats-row">
-    <view class="stat-card">
-      <text class="stat-num">{{stats.pendingCount}}</text>
+    <view class="stat-card" bindtap="goToOrders">
+      <text class="stat-num pending-num">{{stats.pendingCount}}</text>
       <text class="stat-label">待确认</text>
     </view>
-    <view class="stat-card accent">
+    <view class="stat-card accent" bindtap="goToTodayBookings">
       <text class="stat-num">{{stats.todayCount}}</text>
       <text class="stat-label">今日拍摄</text>
     </view>
-    <view class="stat-card">
-      <text class="stat-num">{{stats.deliveryCount}}</text>
-      <text class="stat-label">待发片</text>
+    <view class="stat-card income-card" bindtap="goToIncome">
+      <text class="stat-num income-num">¥{{stats.monthlyIncome}}</text>
+      <text class="stat-label">本月收入</text>
     </view>
   </view>
 
-  <!-- Today's Shoots -->
-  <view class="section" wx:if="{{todayOrders.length > 0}}">
+  <!-- 功能入口 -->
+  <view class="shortcut-row">
+    <view class="shortcut-card" bindtap="goToOrders">
+      <text class="shortcut-icon">📋</text>
+      <text class="shortcut-label">订单管理</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+    <view class="shortcut-card" bindtap="goToCalendar">
+      <text class="shortcut-icon">📅</text>
+      <text class="shortcut-label">日历排期</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+    <view class="shortcut-card" bindtap="goToIncome">
+      <text class="shortcut-icon">💰</text>
+      <text class="shortcut-label">收入统计</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="shortcut-row">
+    <view class="shortcut-card" bindtap="goToProps">
+      <text class="shortcut-icon">🎁</text>
+      <text class="shortcut-label">道具管理</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+    <view class="shortcut-card" bindtap="goToPortfolio">
+      <text class="shortcut-icon">🖼️</text>
+      <text class="shortcut-label">作品管理</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+    <view class="shortcut-card" bindtap="goToDelivery">
+      <text class="shortcut-icon">📦</text>
+      <text class="shortcut-label">交付管理</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 今日拍摄 -->
+  <view class="section" wx:if="{{todayBookings.length > 0}}">
     <view class="section-header">
       <text class="section-title">今日拍摄</text>
     </view>
-    <order-card
-      wx:for="{{todayOrders}}"
-      wx:key="orderId"
-      item="{{item}}"
-      bind:tap="onOrderTap"
-    />
+    <view
+      wx:for="{{todayBookings}}"
+      wx:key="_id"
+      class="booking-row"
+      hover-class="row-hover"
+      bindtap="goToDetail"
+      data-id="{{item._id}}"
+    >
+      <text class="row-time">{{item.preferredTime}}</text>
+      <view class="row-info">
+        <text class="row-client">{{item.clientName}}</text>
+        <text class="row-character" wx:if="{{item.characterName}}">🎭 {{item.characterName}}</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
   </view>
 
-  <!-- Pending Confirmation -->
-  <view class="section" wx:if="{{pendingOrders.length > 0}}">
+  <!-- 待确认预约 -->
+  <view class="section" wx:if="{{pendingBookings.length > 0}}">
     <view class="section-header">
       <text class="section-title">待确认预约</text>
       <text class="view-all" bindtap="goToOrders">全部 ›</text>
     </view>
-    <order-card
-      wx:for="{{pendingOrders}}"
-      wx:key="orderId"
-      item="{{item}}"
-      bind:tap="onOrderTap"
-    />
+    <view
+      wx:for="{{pendingBookings}}"
+      wx:key="_id"
+      class="booking-row"
+      hover-class="row-hover"
+      bindtap="goToDetail"
+      data-id="{{item._id}}"
+    >
+      <view class="row-date-block">
+        <text class="row-date">{{item.preferredDate}}</text>
+        <text class="row-time-small">{{item.preferredTime}}</text>
+      </view>
+      <view class="row-info">
+        <text class="row-client">{{item.clientName}}</text>
+        <text class="row-character" wx:if="{{item.characterName}}">🎭 {{item.characterName}}</text>
+        <text class="row-location">📍 {{item.locationName}}</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
   </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && pendingBookings.length === 0 && todayBookings.length === 0}}">
+    <text>暂无待处理预约</text>
+  </view>
+
+  <!-- 底部导航栏 -->
+  <custom-tab-bar />
 </view>

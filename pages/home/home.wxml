@@ -1,59 +1,108 @@
-<view class="page-container">
-  <!-- Hero Banner -->
-  <view class="hero-banner">
-    <view class="hero-content">
-      <text class="hero-title">专业摄影预约</text>
-      <text class="hero-sub">定格您的珍贵时刻</text>
-      <button class="btn-book" bindtap="goToBooking">立即预约</button>
+<view class="home-page">
+  <!-- 轮播图区域 -->
+  <view class="banner-section">
+    <swiper 
+      class="banner-swiper"
+      indicator-dots="{{true}}"
+      autoplay="{{true}}"
+      interval="{{3000}}"
+      duration="{{500}}"
+      circular="{{true}}"
+      indicator-color="rgba(255,255,255,0.5)"
+      indicator-active-color="#ffffff"
+    >
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <view class="banner-item" style="background: linear-gradient(135deg, {{item.color1}}, {{item.color2}})">
+          <text class="banner-icon">{{item.icon}}</text>
+          <text class="banner-title">{{item.title}}</text>
+          <text class="banner-subtitle">{{item.subtitle}}</text>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 欢迎区域 -->
+  <view class="welcome-section">
+    <view class="welcome-card">
+      <text class="welcome-title">欢迎和小锅拍照</text>
+      <text class="welcome-sub">让我们度过快乐的时光</text>
     </view>
   </view>
 
-  <!-- Style Filter -->
-  <scroll-view class="style-filter" scroll-x>
-    <view class="filter-list">
-      <view
-        wx:for="{{styleFilters}}"
-        wx:key="*this"
-        class="filter-chip {{activeStyle === item ? 'active' : ''}}"
-        bindtap="onStyleFilter"
-        data-style="{{item}}"
-      >{{item}}</view>
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="goToBooking">
+      <view class="action-icon action-book">📅</view>
+      <text class="action-label">我要预约</text>
     </view>
-  </scroll-view>
+    <view class="action-item" bindtap="goToOrders">
+      <view class="action-icon action-orders">📋</view>
+      <text class="action-label">我的订单</text>
+    </view>
+    <view class="action-item" bindtap="goToGallery">
+      <view class="action-icon action-gallery">🖼️</view>
+      <text class="action-label">更多例图</text>
+    </view>
+  </view>
 
-  <!-- Portfolio Grid -->
-  <view class="section">
+  <!-- 瀑布流作品展示 -->
+  <view class="waterfall-section">
     <view class="section-header">
-      <text class="section-title">精选作品</text>
+      <text class="section-title">作品展示</text>
     </view>
-
-    <loading-skeleton wx:if="{{isLoading}}" type="photo-grid" count="6" />
-
-    <view wx:else class="photo-masonry">
-      <view class="masonry-col">
-        <photo-card
-          wx:for="{{leftColumn}}"
-          wx:key="portfolioItemId"
-          item="{{item}}"
-          size="medium"
-          showOverlay
-          bind:tap="onPhotoTap"
-        />
-      </view>
-      <view class="masonry-col">
-        <photo-card
-          wx:for="{{rightColumn}}"
-          wx:key="portfolioItemId"
-          item="{{item}}"
-          size="medium"
-          showOverlay
-          bind:tap="onPhotoTap"
-        />
-      </view>
+    
+    <view wx:if="{{loading}}" class="loading-tip">
+      <text>加载中...</text>
     </view>
-
-    <view wx:if="{{!isLoading && hasMore}}" class="load-more" bindtap="loadMore">
-      <text>加载更多</text>
+    
+    <view wx:elif="{{waterfallPhotos.length === 0}}" class="empty-tip">
+      <text>暂无作品</text>
+    </view>
+    
+    <view wx:else class="waterfall-container">
+      <view class="waterfall-column">
+        <view 
+          wx:for="{{waterfallPhotos}}" 
+          wx:key="id"
+          wx:if="{{index % 2 === 0}}"
+          class="waterfall-item"
+          bindtap="previewPhoto"
+          data-url="{{item.url}}"
+        >
+          <image 
+            class="waterfall-img" 
+            src="{{item.url}}" 
+            mode="widthFix"
+            lazy-load
+          />
+          <view class="waterfall-info" wx:if="{{item.role}}">
+            <text class="waterfall-role">{{item.role}}</text>
+          </view>
+          <view class="featured-tag" wx:if="{{item.isFeatured}}">精选</view>
+        </view>
+      </view>
+      
+      <view class="waterfall-column">
+        <view 
+          wx:for="{{waterfallPhotos}}" 
+          wx:key="id"
+          wx:if="{{index % 2 === 1}}"
+          class="waterfall-item"
+          bindtap="previewPhoto"
+          data-url="{{item.url}}"
+        >
+          <image 
+            class="waterfall-img" 
+            src="{{item.url}}" 
+            mode="widthFix"
+            lazy-load
+          />
+          <view class="waterfall-info" wx:if="{{item.role}}">
+            <text class="waterfall-role">{{item.role}}</text>
+          </view>
+          <view class="featured-tag" wx:if="{{item.isFeatured}}">精选</view>
+        </view>
+      </view>
     </view>
   </view>
 </view>

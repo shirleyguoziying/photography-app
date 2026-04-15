@@ -1,80 +1,71 @@
-const bookingService = require('../../services/bookingService')
-const photographerService = require('../../services/photographerService')
-const storage = require('../../utils/storage')
-const { validateStep, showErrors } = require('../../utils/validator')
-const { generateTimeSlots, today } = require('../../utils/date')
-const { DURATION_OPTIONS, PROPS_OPTIONS, STYLE_TAGS, MOOD_OPTIONS } = require('../../config/constants')
-
-const EMPTY_FORM = {
-  preferredDate: '',
-  preferredTime: '',
-  duration: 2,
-  location: { name: '', address: '', latitude: 0, longitude: 0 },
-  locationNotes: '',
-  props: { hasOwnOutfit: true, outfitCount: 1, propItems: [], notes: '' },
-  stylePreferences: { tags: [], mood: '', specialRequests: '' },
-}
+const { DURATION_OPTIONS, SHOOT_PREFERENCES } = require('../../config/constants')
 
 Page({
   data: {
     currentStep: 0,
-    formData: { ...EMPTY_FORM },
-    bookingId: null,
-
-    // Step 0 options
-    minDate: today(),
-    timeSlots: generateTimeSlots(9, 18, 30),
+    formData: {
+      preferredDate: '',
+      preferredTime: '',
+      duration: 2,
+      location: { name: '', address: '', latitude: 0, longitude: 0 },
+      locationNotes: '',
+      peopleCount: 1,
+      props: { characterName: '', referenceImages: [], propItems: [], notes: '' },
+      stylePreferences: { shootPreference: '', colorR: 128, colorG: 128, colorB: 128, specialRequests: '' }
+    },
+    minDate: '',
+    timeSlots: [
+      '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+      '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+      '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
+    ],
     unavailableTimes: {},
     durationOptions: DURATION_OPTIONS,
-
-    // Step 2 options
-    propsOptions: PROPS_OPTIONS,
-
-    // Step 3 options
-    styleTags: STYLE_TAGS,
-    moodOptions: MOOD_OPTIONS,
-
-    // Map marker
+    shootPreferences: SHOOT_PREFERENCES,
+    cloudProps: [],
+    propsLoading: false,
+    uploadingImages: false,
+    step2Valid: false,
     mapMarkers: [],
-
-    isSaving: false,
-    photographerId: null,
+    colorHex: '#808080',
+    isSaving: false
   },
 
   onShow() {
-    if (typeof this.getTabBar === 'function') {
-      this.getTabBar().setSelected('pages/booking/booking')
-    }
+    this._loadProps()
   },
 
   onLoad(options) {
-    const { photographerId } = options
-    this.setData({ photographerId })
+    this.setData({
+      minDate: this._today()
+    })
+    this._updateColorHex()
+    this._loadProps()
+  },
 
-    // Restore draft if exists
-    const draft = storage.getBookingDraft()
-    if (draft && draft.photographerId === photographerId) {
-      this.setData({ formData: draft.formData, bookingId: draft.bookingId, currentStep: draft.currentStep || 0 })
+  async _loadProps() {
+    this.setData({ propsLoading: true })
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('props').orderBy('order', 'asc').get()
+      this.setData({ cloudProps: res.data || [] })
+    } catch (e) {
+      this.setData({ cloudProps: [] })
+    } finally {
+      this.setData({ propsLoading: false })
     }
   },
 
-  // ===== Step 0: Time =====
-
-  onDateChange(e) {
-    this.setData({ 'formData.preferredDate': e.detail.value, 'formData.preferredTime': '' })
-    this._loadAvailability(e.detail.value)
+  _today() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   },
 
-  async _loadAvailability(date) {
-    const { photographerId } = this.data
-    if (!photographerId) return
-    try {
-      const data = await photographerService.getAvailability(photographerId, date, date)
-      const slots = data[0]?.slots || []
-      const unavailable = {}
-      slots.filter(s => s.isBooked).forEach(s => { unavailable[s.startTime] = true })
-      this.setData({ unavailableTimes: unavailable })
-    } catch (e) {}
+  onDateChange(e) {
+    this.setData({ 'formData.preferredDate': e.detail.value })
   },
 
   onTimeSelect(e) {
@@ -84,122 +75,224 @@ Page({
   },
 
   onDurationSelect(e) {
-    this.setData({ 'formData.duration': e.currentTarget.dataset.value })
+    const value = e.currentTarget.dataset.value
+    this.setData({ 'formData.duration': value })
   },
 
-  // ===== Step 1: Location =====
+  nextStep() {
+    if (this.data.currentStep === 0) {
+      const { preferredDate, preferredTime } = this.data.formData
+      if (!preferredDate) {
+        wx.showToast({ title: '请选择拍摄日期', icon: 'none' })
+        return
+      }
+      if (!preferredTime) {
+        wx.showToast({ title: '请选择拍摄时间', icon: 'none' })
+        return
+      }
+    }
+    
+    if (this.data.currentStep < 3) {
+      this.setData({
+        currentStep: this.data.currentStep + 1
+      })
+    } else {
+      this.goToConfirm()
+    }
+  },
+
+  prevStep() {
+    if (this.data.currentStep > 0) {
+      this.setData({ currentStep: this.data.currentStep - 1 })
+    }
+  },
 
   chooseLocation() {
     wx.chooseLocation({
       success: (res) => {
         this.setData({
-          'formData.location': { name: res.name, address: res.address, latitude: res.latitude, longitude: res.longitude },
-          mapMarkers: [{ id: 1, latitude: res.latitude, longitude: res.longitude, title: res.name }],
+          'formData.location.name': res.name || '',
+          'formData.location.address': res.address || '',
+          'formData.location.latitude': res.latitude,
+          'formData.location.longitude': res.longitude,
+          mapMarkers: [{
+            id: 1, latitude: res.latitude, longitude: res.longitude
+          }]
         })
       }
     })
+  },
+
+  clearLocation() {
+    this.setData({
+      'formData.location.name': '',
+      'formData.location.address': '',
+      'formData.location.latitude': 0,
+      'formData.location.longitude': 0,
+      mapMarkers: []
+    })
+  },
+
+  onLocationNameInput(e) {
+    this.setData({ 'formData.location.name': e.detail.value })
+  },
+
+  onLocationAddressInput(e) {
+    this.setData({ 'formData.location.address': e.detail.value })
   },
 
   onLocationNotesInput(e) {
     this.setData({ 'formData.locationNotes': e.detail.value })
   },
 
-  // ===== Step 2: Props =====
-
-  setHasOutfit(e) {
-    this.setData({ 'formData.props.hasOwnOutfit': e.currentTarget.dataset.val })
+  incPeople() {
+    const count = this.data.formData.peopleCount || 1
+    if (count < 10) {
+      this.setData({ 'formData.peopleCount': count + 1 })
+    }
   },
 
-  incOutfitCount() {
-    const count = Math.min(this.data.formData.props.outfitCount + 1, 5)
-    this.setData({ 'formData.props.outfitCount': count })
+  decPeople() {
+    const count = this.data.formData.peopleCount || 1
+    if (count > 1) {
+      this.setData({ 'formData.peopleCount': count - 1 })
+    }
   },
 
-  decOutfitCount() {
-    const count = Math.max(this.data.formData.props.outfitCount - 1, 1)
-    this.setData({ 'formData.props.outfitCount': count })
+  onCharacterNameInput(e) {
+    this.setData({ 'formData.props.characterName': e.detail.value })
+    this._checkStep2Valid()
+  },
+
+  chooseReferenceImages() {
+    if (this.data.uploadingImages) return
+    
+    const currentCount = this.data.formData.props.referenceImages.length
+    const maxCount = 9 - currentCount
+    
+    wx.chooseImage({
+      count: maxCount,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const newImages = res.tempFilePaths
+        const allImages = this.data.formData.props.referenceImages.concat(newImages)
+        this.setData({
+          'formData.props.referenceImages': allImages
+        })
+        this._checkStep2Valid()
+      }
+    })
+  },
+
+  removeReferenceImage(e) {
+    const index = e.currentTarget.dataset.index
+    const images = [...this.data.formData.props.referenceImages]
+    images.splice(index, 1)
+    this.setData({
+      'formData.props.referenceImages': images
+    })
+    this._checkStep2Valid()
   },
 
   toggleProp(e) {
-    const key = e.currentTarget.dataset.key
-    const items = [...this.data.formData.props.propItems]
-    const idx = items.indexOf(key)
-    if (idx >= 0) items.splice(idx, 1)
-    else items.push(key)
-    this.setData({ 'formData.props.propItems': items })
+    console.log('toggleProp clicked, id:', e.currentTarget.dataset.id)
+    const id = e.currentTarget.dataset.id
+    let currentItems = this.data.formData.props.propItems ? [...this.data.formData.props.propItems] : []
+    const index = currentItems.indexOf(id)
+    
+    if (index > -1) {
+      currentItems.splice(index, 1)
+    } else {
+      currentItems.push(id)
+    }
+    
+    console.log('propItems before:', this.data.formData.props.propItems)
+    console.log('propItems after:', currentItems)
+    
+    const newFormData = JSON.parse(JSON.stringify(this.data.formData))
+    newFormData.props.propItems = currentItems
+    
+    this.setData({
+      formData: newFormData
+    }, () => {
+      console.log('setData completed, propItems:', this.data.formData.props.propItems)
+    })
+  },
+
+  _getPropName(propId) {
+    const prop = this.data.cloudProps.find(p => p._id === propId)
+    return prop ? prop.name : '未知道具'
   },
 
   onPropsNotesInput(e) {
     this.setData({ 'formData.props.notes': e.detail.value })
   },
 
-  // ===== Step 3: Style =====
-
-  toggleStyleTag(e) {
-    const tag = e.currentTarget.dataset.tag
-    const tags = [...this.data.formData.stylePreferences.tags]
-    const idx = tags.indexOf(tag)
-    if (idx >= 0) tags.splice(idx, 1)
-    else tags.push(tag)
-    this.setData({ 'formData.stylePreferences.tags': tags })
+  onShootPreferenceSelect(e) {
+    const preference = e.currentTarget.dataset.value
+    this.setData({
+      'formData.stylePreferences.shootPreference': preference
+    })
   },
 
-  onMoodSelect(e) {
-    this.setData({ 'formData.stylePreferences.mood': e.currentTarget.dataset.value })
+  _updateColorHex() {
+    const { colorR, colorG, colorB } = this.data.formData.stylePreferences
+    const toHex = n => Number(n || 0).toString(16).padStart(2, '0')
+    const hex = '#' + toHex(colorR) + toHex(colorG) + toHex(colorB)
+    this.setData({ colorHex: hex })
+  },
+
+  onColorRChange(e) {
+    this.setData({
+      'formData.stylePreferences.colorR': e.detail.value
+    })
+    this._updateColorHex()
+  },
+
+  onColorGChange(e) {
+    this.setData({
+      'formData.stylePreferences.colorG': e.detail.value
+    })
+    this._updateColorHex()
+  },
+
+  onColorBChange(e) {
+    this.setData({
+      'formData.stylePreferences.colorB': e.detail.value
+    })
+    this._updateColorHex()
   },
 
   onSpecialRequestInput(e) {
-    this.setData({ 'formData.stylePreferences.specialRequests': e.detail.value })
+    this.setData({
+      'formData.stylePreferences.specialRequests': e.detail.value
+    })
   },
 
-  // ===== Navigation =====
-
-  async nextStep() {
-    const { currentStep, formData } = this.data
-    const errors = validateStep(currentStep, formData)
-    if (errors.length > 0) { showErrors(errors); return }
-
-    // Auto-save draft to server
-    await this._autosave()
-
-    this.setData({ currentStep: currentStep + 1 })
-    wx.pageScrollTo({ scrollTop: 0 })
+  _checkStep2Valid() {
+    const { characterName, referenceImages } = this.data.formData.props
+    const isValid = characterName && characterName.length > 0 && referenceImages && referenceImages.length > 0
+    this.setData({ step2Valid: isValid })
   },
 
-  prevStep() {
-    this.setData({ currentStep: Math.max(0, this.data.currentStep - 1) })
-    wx.pageScrollTo({ scrollTop: 0 })
-  },
-
-  async goToConfirm() {
-    const { currentStep, formData } = this.data
-    const errors = validateStep(currentStep, formData)
-    if (errors.length > 0) { showErrors(errors); return }
-
-    this.setData({ isSaving: true })
+  _autosave() {
     try {
-      await this._autosave()
-      wx.navigateTo({
-        url: `/pages/booking-confirm/booking-confirm?bookingId=${this.data.bookingId}`,
-      })
-    } finally {
+      wx.setStorageSync('photo_booking_draft', this.data.formData)
+    } catch (e) {}
+  },
+
+  goToConfirm() {
+    this.setData({ isSaving: true })
+    this._autosave()
+    
+    setTimeout(() => {
       this.setData({ isSaving: false })
-    }
-  },
-
-  async _autosave() {
-    const { formData, photographerId } = this.data
-    let { bookingId } = this.data
-
-    if (!bookingId) {
-      const booking = await bookingService.createDraft(photographerId)
-      bookingId = booking.bookingId
-      this.setData({ bookingId })
-    }
-
-    await bookingService.saveDraft(bookingId, formData)
-
-    // Persist draft locally
-    storage.setBookingDraft({ bookingId, photographerId, formData, currentStep: this.data.currentStep })
-  },
+      wx.navigateTo({
+        url: '/pages/booking-confirm/booking-confirm'
+      }).catch(() => {
+        wx.showToast({ title: '请先完成预约信息', icon: 'none' })
+      })
+    }, 500)
+  }
 })
