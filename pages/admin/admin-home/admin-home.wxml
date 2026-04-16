@@ -46,6 +46,11 @@
   </view>
 
   <view class="shortcut-row">
+    <view class="shortcut-card" bindtap="goToBanners">
+      <text class="shortcut-icon">🎠</text>
+      <text class="shortcut-label">轮播管理</text>
+      <text class="shortcut-arrow">›</text>
+    </view>
     <view class="shortcut-card" bindtap="goToProps">
       <text class="shortcut-icon">🎁</text>
       <text class="shortcut-label">道具管理</text>
@@ -56,6 +61,9 @@
       <text class="shortcut-label">作品管理</text>
       <text class="shortcut-arrow">›</text>
     </view>
+  </view>
+
+  <view class="shortcut-row">
     <view class="shortcut-card" bindtap="goToDelivery">
       <text class="shortcut-icon">📦</text>
       <text class="shortcut-label">交付管理</text>

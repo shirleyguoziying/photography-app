@@ -14,11 +14,31 @@ Page({
     if (tabBar && typeof tabBar.setSelected === 'function') {
       tabBar.setSelected('pages/home/home')
     }
+    this._loadBanners()
     this._loadWaterfall()
   },
 
   onLoad() {
+    this._loadBanners()
     this._loadWaterfall()
+  },
+
+  async _loadBanners() {
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('banners')
+        .where({ isActive: true })
+        .orderBy('sortOrder', 'asc')
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get()
+      
+      if (res.data && res.data.length > 0) {
+        this.setData({ banners: res.data })
+      }
+    } catch (e) {
+      console.error('加载轮播图失败:', e)
+    }
   },
 
   async _loadWaterfall() {

@@ -121,6 +121,10 @@ Page({
     wx.navigateTo({ url: '/pages/admin/admin-delivery/admin-delivery' })
   },
 
+  goToBanners() {
+    wx.navigateTo({ url: '/pages/admin/admin-banners/admin-banners' })
+  },
+
   async showMyOpenid() {
     try {
       const res = await wx.cloud.callFunction({

@@ -3,19 +3,26 @@
   <view class="banner-section">
     <swiper 
       class="banner-swiper"
-      indicator-dots="{{true}}"
-      autoplay="{{true}}"
+      indicator-dots="{{banners.length > 1}}"
+      autoplay="{{banners.length > 1}}"
       interval="{{3000}}"
       duration="{{500}}"
-      circular="{{true}}"
+      circular="{{banners.length > 1}}"
       indicator-color="rgba(255,255,255,0.5)"
       indicator-active-color="#ffffff"
     >
-      <swiper-item wx:for="{{banners}}" wx:key="id">
-        <view class="banner-item" style="background: linear-gradient(135deg, {{item.color1}}, {{item.color2}})">
-          <text class="banner-icon">{{item.icon}}</text>
-          <text class="banner-title">{{item.title}}</text>
-          <text class="banner-subtitle">{{item.subtitle}}</text>
+      <swiper-item wx:for="{{banners}}" wx:key="_id">
+        <view class="banner-item" wx:if="{{item.imageUrl}}">
+          <image class="banner-img" src="{{item.imageUrl}}" mode="aspectFill" />
+          <view class="banner-overlay">
+            <text class="banner-title" wx:if="{{item.title}}">{{item.title}}</text>
+            <text class="banner-subtitle" wx:if="{{item.subtitle}}">{{item.subtitle}}</text>
+          </view>
+        </view>
+        <view class="banner-item" wx:else style="background: linear-gradient(135deg, {{item.color1 || '#c8a97e'}}, {{item.color2 || '#b8986e'}})">
+          <text class="banner-icon">{{item.icon || '📸'}}</text>
+          <text class="banner-title">{{item.title || '专业COS摄影'}}</text>
+          <text class="banner-subtitle">{{item.subtitle || '还原你心中的角色'}}</text>
         </view>
       </swiper-item>
     </swiper>

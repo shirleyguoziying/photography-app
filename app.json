@@ -23,6 +23,7 @@
     "pages/admin/admin-props/admin-props",
     "pages/admin/admin-income/admin-income",
     "pages/admin/admin-my/admin-my",
+    "pages/admin/admin-banners/admin-banners",
     "pages/profile-edit/profile-edit",
     "pages/webview/webview",
     "pages/about/about"
