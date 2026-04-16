@@ -45,6 +45,7 @@ exports.main = async (event, context) => {
         locationName: b.location?.name || '',
         characterName: b.props?.characterName || '',
         shootPrefLabel: PREF_LABEL[b.stylePreferences?.shootPreference] || '',
+        income: b.income,
         createdAt: b.createdAt,
       }))
       .sort((a, b) => (b.preferredDate || '').localeCompare(a.preferredDate || ''))
